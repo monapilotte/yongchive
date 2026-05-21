@@ -630,6 +630,8 @@
       autofill.textContent = `⚠️ 이미 등록된 영상이에요 — "${dup.title}" (${dup.date})`;
       autofill.className = 'yt-autofill';
       autofill.style.color = '#c0392b';
+      clearTimeout(autoFillTimer);
+      return; // 자동완성 스킵
     } else {
       autofill.style.color = '';
     }
