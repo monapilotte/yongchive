@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YONGchive 관리자</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f5f4f0;
+      --surface: #fff;
+      --border: #e0ddd6;
+      --text: #1a1a1a;
+      --sub: #777;
+      --accent: #1a4fa0;
+      --accent-light: #e8eef8;
+      --green: #2d6a4f;
+      --red: #c0392b;
+      --mono: 'DM Mono', monospace;
+      --sans: 'Noto Sans KR', sans-serif;
+      --r: 6px;
+    }
+    body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    /* ── HEADER ── */
+    header {
+      background: #1a1a1a; color: #fff;
+      padding: 0 24px; position: sticky; top: 0; z-index: 100;
+    }
+    .header-inner {
+      max-width: 860px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between; height: 52px;
+    }
+    .header-title { font-size: 14px; font-weight: 700; font-family: var(--mono); }
+    .header-title span { color: #7eb8f7; }
+    .header-right { display: flex; align-items: center; gap: 12px; }
+    .btn-site { font-family: var(--mono); font-size: 11px; color: #aaa; text-decoration: none; }
+    .btn-site:hover { color: #fff; }
+    .github-status { font-family: var(--mono); font-size: 11px; color: #888; }
+    .github-status.ok { color: #5dbb63; }
+
+    /* ── LOGIN SCREEN ── */
+    .login-screen {
+      max-width: 480px; margin: 80px auto; padding: 0 24px;
+    }
+    .login-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--r); padding: 32px;
+    }
+    .login-card h2 { font-size: 18px; margin-bottom: 6px; }
+    .login-card p { font-size: 13px; color: var(--sub); margin-bottom: 24px; line-height: 1.6; }
+    .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+    .field label { font-size: 12px; font-weight: 500; color: var(--sub); font-family: var(--mono); }
+    .field input {
+      font-family: var(--mono); font-size: 13px;
+      border: 1px solid var(--border); border-radius: var(--r);
+      padding: 10px 12px; background: var(--bg); outline: none;
+      transition: border-color 0.15s;
+    }
+    .field input:focus { border-color: var(--accent); background: #fff; }
+    .btn-primary {
+      width: 100%; font-family: var(--sans); font-size: 14px; font-weight: 500;
+      background: var(--accent); color: #fff; border: none;
+      border-radius: var(--r); padding: 11px; cursor: pointer;
+      transition: opacity 0.15s; margin-top: 4px;
+    }
+    .btn-primary:hover { opacity: 0.88; }
+    .login-hint {
+      margin-top: 20px; padding: 14px;
+      background: var(--accent-light); border-radius: var(--r);
+      font-size: 12px; line-height: 1.7; color: var(--accent);
+    }
+    .login-hint a { color: var(--accent); }
+    .login-err {
+      margin-top: 10px; font-size: 12px; color: var(--red);
+      font-family: var(--mono); display: none;
+    }
+
+    /* ── MAIN ── */
+    .main-wrap { max-width: 860px; margin: 0 auto; padding: 28px 24px; display: none; }
+
+    /* ── TABS ── */
+    .tabs { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 28px; }
+    .tab-btn {
+      font-family: var(--sans); font-size: 13px; font-weight: 500;
+      color: var(--sub); background: none; border: none;
+      border-bottom: 2px solid transparent; padding: 10px 18px;
+      cursor: pointer; transition: all 0.15s; margin-bottom: -1px;
+    }
+    .tab-btn:hover { color: var(--text); }
+    .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .tab-section { display: none; }
+    .tab-section.active { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    @media(max-width:660px){ .tab-section.active { grid-template-columns: 1fr; } }
+
+    /* ── PANEL ── */
+    .panel {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--r); padding: 20px;
+    }
+    .panel h3 {
+      font-size: 14px; font-weight: 700; margin-bottom: 16px;
+      padding-bottom: 10px; border-bottom: 1px solid var(--border);
+    }
+    .form-field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; }
+    .form-field label { font-size: 11px; font-weight: 500; color: var(--sub); font-family: var(--mono); }
+    .form-field input, .form-field select, .form-field textarea {
+      font-family: var(--sans); font-size: 13px;
+      border: 1px solid var(--border); border-radius: var(--r);
+      padding: 8px 10px; background: var(--bg); outline: none;
+      transition: border-color 0.15s;
+    }
+    .form-field input:focus, .form-field textarea:focus { border-color: var(--accent); background: #fff; }
+    .form-field textarea { resize: vertical; min-height: 72px; line-height: 1.5; font-size: 12px; }
+    .form-row { display: flex; gap: 8px; }
+    .form-row .form-field { flex: 1; }
+
+    /* ── VIDEO PREVIEW ── */
+    .yt-preview {
+      width: 100%; aspect-ratio: 16/9;
+      background: #111; border-radius: var(--r);
+      overflow: hidden; margin-bottom: 12px; display: none;
+    }
+    .yt-preview iframe { width: 100%; height: 100%; border: none; }
+    .yt-id-badge {
+      font-family: var(--mono); font-size: 11px; color: var(--green);
+      background: #eaf5ef; border: 1px solid #b7dfc8;
+      border-radius: 3px; padding: 3px 8px; margin-bottom: 12px;
+      display: none;
+    }
+
+    /* ── GALLERY PREVIEW ── */
+    .gallery-preview {
+      display: grid; grid-template-columns: repeat(3,1fr); gap: 5px;
+      margin-bottom: 12px;
+    }
+    .gallery-preview img {
+      width: 100%; aspect-ratio: 1; object-fit: cover;
+      border-radius: 4px; border: 1px solid var(--border);
+    }
+    .gallery-preview .preview-err {
+      aspect-ratio: 1; background: var(--bg); border: 1px dashed var(--border);
+      border-radius: 4px; display: flex; align-items: center; justify-content: center;
+      font-family: var(--mono); font-size: 10px; color: var(--sub);
+    }
+
+    /* ── SUBMIT BTN ── */
+    .btn-submit {
+      width: 100%; font-family: var(--sans); font-size: 13px; font-weight: 500;
+      background: var(--accent); color: #fff; border: none;
+      border-radius: var(--r); padding: 10px; cursor: pointer;
+      transition: all 0.15s; display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .btn-submit:hover { opacity: 0.88; }
+    .btn-submit:disabled { background: #aaa; cursor: not-allowed; }
+    .btn-submit.success { background: var(--green); }
+
+    /* ── LIST PANEL (우측) ── */
+    .list-panel {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--r); padding: 20px;
+      display: flex; flex-direction: column;
+    }
+    .list-panel h3 {
+      font-size: 14px; font-weight: 700; margin-bottom: 12px;
+      padding-bottom: 10px; border-bottom: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .list-count { font-size: 11px; font-family: var(--mono); color: var(--sub); font-weight: 400; }
+    .list-scroll { flex: 1; overflow-y: auto; max-height: 500px; }
+    .list-item {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 10px 0; border-bottom: 1px solid var(--border);
+    }
+    .list-item:last-child { border-bottom: none; }
+    .list-item-info { flex: 1; min-width: 0; }
+    .list-item-date { font-family: var(--mono); font-size: 10px; color: var(--sub); margin-bottom: 2px; }
+    .list-item-title { font-size: 12px; font-weight: 500; line-height: 1.4; word-break: break-all; }
+    .list-item-sub { font-size: 11px; color: var(--sub); margin-top: 2px; }
+    .list-thumb {
+      width: 48px; height: 48px; object-fit: cover;
+      border-radius: 4px; border: 1px solid var(--border); flex-shrink: 0;
+    }
+    .btn-delete {
+      font-family: var(--mono); font-size: 10px; color: var(--red);
+      background: #fdf0ee; border: 1px solid #f5c0b8;
+      border-radius: 3px; padding: 3px 7px; cursor: pointer;
+      flex-shrink: 0; transition: background 0.1s;
+    }
+    .btn-delete:hover { background: #fce0da; }
+    .list-empty { font-family: var(--mono); font-size: 12px; color: var(--sub); padding: 20px 0; text-align: center; }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+      background: #1a1a1a; color: #fff; font-family: var(--mono); font-size: 12px;
+      padding: 10px 20px; border-radius: 20px; opacity: 0;
+      transition: opacity 0.2s; pointer-events: none; white-space: nowrap; z-index: 999;
+    }
+    .toast.show { opacity: 1; }
+    .toast.green { background: var(--green); }
+    .toast.red { background: var(--red); }
+
+    .item-tag {
+      font-size: 10px; font-family: var(--mono);
+      border-radius: 3px; padding: 1px 5px;
+      background: var(--accent-light); color: var(--accent);
+      display: inline-block; margin-left: 4px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="header-title">YONG<span>chive</span> · admin</div>
+    <div class="header-right">
+      <a class="btn-site" href="index.html">← 사이트 보기</a>
+      <span class="github-status" id="gh-status">⬤ 미연결</span>
+    </div>
+  </div>
+</header>
+
+<!-- ── 로그인 화면 ── -->
+<div class="login-screen" id="login-screen">
+  <div class="login-card">
+    <h2>🔐 관리자 로그인</h2>
+    <p>GitHub Personal Access Token과 레포지토리 정보를 입력하면<br>data.json을 직접 수정할 수 있어요.</p>
+
+    <div class="field">
+      <label>GitHub 사용자명</label>
+      <input type="text" id="gh-user" placeholder="예: mirr1308" />
+    </div>
+    <div class="field">
+      <label>레포지토리 이름</label>
+      <input type="text" id="gh-repo" placeholder="예: yongchive" />
+    </div>
+    <div class="field">
+      <label>Personal Access Token</label>
+      <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxx" />
+    </div>
+    <div class="field">
+      <label>관리자 비밀번호</label>
+      <input type="password" id="admin-pw" placeholder="사이트와 같은 비밀번호" />
+    </div>
+    <button class="btn-primary" onclick="doLogin()">로그인</button>
+    <div class="login-err" id="login-err"></div>
+
+    <div class="login-hint">
+      💡 <strong>토큰 발급 방법</strong><br>
+      GitHub → Settings → Developer settings →
+      <a href="https://github.com/settings/tokens" target="_blank">Personal access tokens (classic)</a><br>
+      → Generate new token → <strong>repo</strong> 권한 체크 → 생성<br><br>
+      입력 정보는 브라우저 세션에만 저장되며 외부로 전송되지 않아요.
+    </div>
+  </div>
+</div>
+
+<!-- ── 메인 관리 화면 ── -->
+<div class="main-wrap" id="main-wrap">
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('articles', this)">📰 기사</button>
+    <button class="tab-btn" onclick="switchTab('videos', this)">🎥 영상</button>
+    <button class="tab-btn" onclick="switchTab('gallery', this)">🖼️ 갤러리</button>
+  </div>
+
+  <!-- ── 기사 탭 ── -->
+  <div id="tab-articles" class="tab-section active">
+
+    <div class="panel">
+      <h3>기사 추가</h3>
+      <div class="form-row">
+        <div class="form-field">
+          <label>날짜</label>
+          <input type="date" id="a-date" />
+        </div>
+        <div class="form-field">
+          <label>태그</label>
+          <select id="a-tag">
+            <option>경기</option><option>인터뷰</option>
+            <option>훈련</option><option>수상</option><option>기타</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-field">
+        <label>매체명</label>
+        <input type="text" id="a-source" placeholder="스포츠조선, MK스포츠 등" />
+      </div>
+      <div class="form-field">
+        <label>기사 제목</label>
+        <input type="text" id="a-title" placeholder="기사 제목 그대로 붙여넣기" />
+      </div>
+      <div class="form-field">
+        <label>기사 URL</label>
+        <input type="url" id="a-url" placeholder="https://..." />
+      </div>
+      <button class="btn-submit" id="a-submit" onclick="submitArticle()">
+        <span>기사 저장</span>
+      </button>
+    </div>
+
+    <div class="list-panel">
+      <h3>
+        저장된 기사
+        <span class="list-count" id="a-list-count"></span>
+      </h3>
+      <div class="list-scroll" id="a-list"></div>
+    </div>
+  </div>
+
+  <!-- ── 영상 탭 ── -->
+  <div id="tab-videos" class="tab-section">
+
+    <div class="panel">
+      <h3>영상 추가</h3>
+      <div class="form-field">
+        <label>유튜브 URL</label>
+        <input type="url" id="v-url" placeholder="https://www.youtube.com/watch?v=..." oninput="handleVideoUrl()" />
+      </div>
+      <div class="yt-id-badge" id="v-id-badge"></div>
+      <div class="yt-preview" id="v-preview">
+        <iframe id="v-iframe" allowfullscreen loading="lazy"></iframe>
+      </div>
+      <div class="form-row">
+        <div class="form-field">
+          <label>날짜</label>
+          <input type="date" id="v-date" />
+        </div>
+        <div class="form-field">
+          <label>태그</label>
+          <select id="v-tag">
+            <option>인터뷰</option><option>경기</option>
+            <option>훈련</option><option>예능</option><option>기타</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-field">
+        <label>채널명</label>
+        <input type="text" id="v-channel" placeholder="KBO 공식, 롯데자이언츠 등" />
+      </div>
+      <div class="form-field">
+        <label>영상 제목</label>
+        <input type="text" id="v-title" placeholder="영상 제목" />
+      </div>
+      <button class="btn-submit" id="v-submit" onclick="submitVideo()">
+        <span>영상 저장</span>
+      </button>
+    </div>
+
+    <div class="list-panel">
+      <h3>
+        저장된 영상
+        <span class="list-count" id="v-list-count"></span>
+      </h3>
+      <div class="list-scroll" id="v-list"></div>
+    </div>
+  </div>
+
+  <!-- ── 갤러리 탭 ── -->
+  <div id="tab-gallery" class="tab-section">
+
+    <div class="panel">
+      <h3>사진 추가</h3>
+      <div class="form-field">
+        <label>이미지 URL (한 줄에 하나씩)</label>
+        <textarea id="g-urls" placeholder="https://example.com/photo1.jpg&#10;https://example.com/photo2.jpg" oninput="previewGalleryUrls()"></textarea>
+      </div>
+      <div class="gallery-preview" id="g-preview"></div>
+      <button class="btn-submit" id="g-submit" onclick="submitGallery()">
+        <span>사진 저장</span>
+      </button>
+    </div>
+
+    <div class="list-panel">
+      <h3>
+        저장된 사진
+        <span class="list-count" id="g-list-count"></span>
+      </h3>
+      <div class="list-scroll" id="g-list"></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  // ─────────────────────────────────────────────
+  // 설정 — 비밀번호 변경 시 이 한 줄만 수정
+  const ADMIN_PW = 'yong56';
+  // ─────────────────────────────────────────────
+
+  let GH = { user: '', repo: '', token: '' };
+  let DATA = { articles: [], videos: [], gallery: [] };
+  let fileSha = '';
+
+  // ── 로그인 ──
+  async function doLogin() {
+    const pw    = document.getElementById('admin-pw').value;
+    const user  = document.getElementById('gh-user').value.trim();
+    const repo  = document.getElementById('gh-repo').value.trim();
+    const token = document.getElementById('gh-token').value.trim();
+    const err   = document.getElementById('login-err');
+
+    if (pw !== ADMIN_PW) { showErr('비밀번호가 틀렸어요.'); return; }
+    if (!user || !repo || !token) { showErr('모든 항목을 입력해 주세요.'); return; }
+
+    GH = { user, repo, token };
+    const ok = await loadDataFromGitHub();
+    if (!ok) { showErr('GitHub 연결 실패. 토큰·레포 이름을 확인해 주세요.'); return; }
+
+    sessionStorage.setItem('ychive_gh', JSON.stringify(GH));
+    err.style.display = 'none';
+    showMain();
+  }
+
+  function showErr(msg) {
+    const err = document.getElementById('login-err');
+    err.textContent = msg; err.style.display = 'block';
+  }
+
+  function showMain() {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('main-wrap').style.display = 'block';
+    const s = document.getElementById('gh-status');
+    s.textContent = `⬤ ${GH.user}/${GH.repo}`;
+    s.className = 'github-status ok';
+    setTodayDates();
+    renderAll();
+  }
+
+  // ── GitHub API ──
+  async function loadDataFromGitHub() {
+    try {
+      const res = await fetch(
+        `https://api.github.com/repos/${GH.user}/${GH.repo}/contents/data.json`,
+        { headers: { Authorization: `token ${GH.token}` } }
+      );
+      if (!res.ok) return false;
+      const json = await res.json();
+      fileSha = json.sha;
+      const decoded = decodeURIComponent(escape(atob(json.content.replace(/\n/g,''))));
+      DATA = JSON.parse(decoded);
+      if (!DATA.gallery) DATA.gallery = [];
+      return true;
+    } catch(e) { return false; }
+  }
+
+  async function saveDataToGitHub() {
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(DATA, null, 2))));
+    const res = await fetch(
+      `https://api.github.com/repos/${GH.user}/${GH.repo}/contents/data.json`,
+      {
+        method: 'PUT',
+        headers: { Authorization: `token ${GH.token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: `[YONGchive] data 업데이트 ${new Date().toLocaleString('ko-KR')}`,
+          content,
+          sha: fileSha
+        })
+      }
+    );
+    if (!res.ok) throw new Error('저장 실패');
+    const json = await res.json();
+    fileSha = json.content.sha;
+  }
+
+  // ── 탭 전환 ──
+  function switchTab(name, btn) {
+    document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  // ── 날짜 기본값 ──
+  function setTodayDates() {
+    const today = new Date().toISOString().slice(0,10);
+    ['a-date','v-date'].forEach(id => document.getElementById(id).value = today);
+  }
+
+  // ── 렌더 전체 ──
+  function renderAll() { renderArticleList(); renderVideoList(); renderGalleryList(); }
+
+  // ── 기사 ──
+  function renderArticleList() {
+    const list = DATA.articles;
+    document.getElementById('a-list-count').textContent = list.length + '건';
+    document.getElementById('a-list').innerHTML = list.length ? list.map((a,i) => `
+      <div class="list-item">
+        <div class="list-item-info">
+          <div class="list-item-date">${a.date} · ${a.source}
+            ${(a.tags||[]).map(t=>`<span class="item-tag">${t}</span>`).join('')}
+          </div>
+          <div class="list-item-title">
+            <a href="${a.url}" target="_blank" style="color:inherit;text-decoration:none">${a.title}</a>
+          </div>
+        </div>
+        <button class="btn-delete" onclick="deleteItem('articles',${i})">삭제</button>
+      </div>`).join('')
+    : '<div class="list-empty">기사가 없습니다</div>';
+  }
+
+  async function submitArticle() {
+    const date   = document.getElementById('a-date').value;
+    const source = document.getElementById('a-source').value.trim();
+    const title  = document.getElementById('a-title').value.trim();
+    const url    = document.getElementById('a-url').value.trim();
+    const tag    = document.getElementById('a-tag').value;
+    if (!date||!title||!url) { showToast('날짜, 제목, URL은 필수예요', 'red'); return; }
+    const btn = document.getElementById('a-submit');
+    btn.disabled = true; btn.querySelector('span').textContent = '저장 중...';
+    DATA.articles.unshift({ date, title, url, source, tags:[tag] });
+    DATA.articles.sort((a,b) => b.date.localeCompare(a.date));
+    try {
+      await saveDataToGitHub();
+      showToast('✅ 기사 저장 완료!', 'green');
+      ['a-source','a-title','a-url'].forEach(id => document.getElementById(id).value='');
+      renderArticleList();
+    } catch(e) { showToast('❌ 저장 실패: GitHub 연결 확인', 'red'); DATA.articles.shift(); }
+    btn.disabled = false; btn.querySelector('span').textContent = '기사 저장';
+  }
+
+  // ── 영상 ──
+  function extractVideoId(url) {
+    const patterns=[/[?&]v=([^&#]+)/,/youtu\.be\/([^?&#]+)/,/shorts\/([^?&#]+)/,/embed\/([^?&#]+)/];
+    for(const p of patterns){ const m=url.match(p); if(m) return m[1]; }
+    return null;
+  }
+
+  function handleVideoUrl() {
+    const url = document.getElementById('v-url').value.trim();
+    const id  = extractVideoId(url);
+    const badge = document.getElementById('v-id-badge');
+    const preview = document.getElementById('v-preview');
+    if (id) {
+      badge.textContent = `✓ videoId: ${id}`;
+      badge.style.display = 'block';
+      document.getElementById('v-iframe').src = `https://www.youtube.com/embed/${id}`;
+      preview.style.display = 'block';
+    } else {
+      badge.style.display = 'none';
+      preview.style.display = 'none';
+    }
+  }
+
+  function renderVideoList() {
+    const list = DATA.videos;
+    document.getElementById('v-list-count').textContent = list.length + '건';
+    document.getElementById('v-list').innerHTML = list.length ? list.map((v,i) => `
+      <div class="list-item">
+        <img class="list-thumb" src="https://img.youtube.com/vi/${v.videoId}/mqdefault.jpg" alt="" />
+        <div class="list-item-info">
+          <div class="list-item-date">${v.date} · ${v.channel}
+            ${(v.tags||[]).map(t=>`<span class="item-tag">${t}</span>`).join('')}
+          </div>
+          <div class="list-item-title">${v.title}</div>
+        </div>
+        <button class="btn-delete" onclick="deleteItem('videos',${i})">삭제</button>
+      </div>`).join('')
+    : '<div class="list-empty">영상이 없습니다</div>';
+  }
+
+  async function submitVideo() {
+    const url     = document.getElementById('v-url').value.trim();
+    const videoId = extractVideoId(url);
+    const date    = document.getElementById('v-date').value;
+    const channel = document.getElementById('v-channel').value.trim();
+    const title   = document.getElementById('v-title').value.trim();
+    const tag     = document.getElementById('v-tag').value;
+    if (!videoId) { showToast('유효한 유튜브 URL을 입력해 주세요', 'red'); return; }
+    if (!date||!title) { showToast('날짜와 제목은 필수예요', 'red'); return; }
+    const btn = document.getElementById('v-submit');
+    btn.disabled = true; btn.querySelector('span').textContent = '저장 중...';
+    DATA.videos.unshift({ date, title, videoId, channel, tags:[tag] });
+    DATA.videos.sort((a,b) => b.date.localeCompare(a.date));
+    try {
+      await saveDataToGitHub();
+      showToast('✅ 영상 저장 완료!', 'green');
+      ['v-url','v-channel','v-title'].forEach(id => document.getElementById(id).value='');
+      document.getElementById('v-id-badge').style.display='none';
+      document.getElementById('v-preview').style.display='none';
+      renderVideoList();
+    } catch(e) { showToast('❌ 저장 실패: GitHub 연결 확인', 'red'); DATA.videos.shift(); }
+    btn.disabled = false; btn.querySelector('span').textContent = '영상 저장';
+  }
+
+  // ── 갤러리 ──
+  function previewGalleryUrls() {
+    const urls = document.getElementById('g-urls').value.trim().split('\n').map(u=>u.trim()).filter(Boolean);
+    document.getElementById('g-preview').innerHTML = urls.map(u=>
+      `<img src="${u}" onerror="this.outerHTML='<div class=preview-err>오류</div>'" />`
+    ).join('');
+  }
+
+  function renderGalleryList() {
+    const list = DATA.gallery;
+    document.getElementById('g-list-count').textContent = list.length + '장';
+    document.getElementById('g-list').innerHTML = list.length ? list.map((url,i) => `
+      <div class="list-item">
+        <img class="list-thumb" src="${url}" alt="" onerror="this.style.display='none'" />
+        <div class="list-item-info">
+          <div class="list-item-title" style="word-break:break-all;font-size:11px">${url}</div>
+        </div>
+        <button class="btn-delete" onclick="deleteItem('gallery',${i})">삭제</button>
+      </div>`).join('')
+    : '<div class="list-empty">사진이 없습니다</div>';
+  }
+
+  async function submitGallery() {
+    const urls = document.getElementById('g-urls').value.trim().split('\n').map(u=>u.trim()).filter(Boolean);
+    if (!urls.length) { showToast('URL을 입력해 주세요', 'red'); return; }
+    const btn = document.getElementById('g-submit');
+    btn.disabled = true; btn.querySelector('span').textContent = '저장 중...';
+    const before = [...DATA.gallery];
+    DATA.gallery.push(...urls);
+    try {
+      await saveDataToGitHub();
+      showToast(`✅ 사진 ${urls.length}장 저장 완료!`, 'green');
+      document.getElementById('g-urls').value='';
+      document.getElementById('g-preview').innerHTML='';
+      renderGalleryList();
+    } catch(e) { showToast('❌ 저장 실패', 'red'); DATA.gallery = before; }
+    btn.disabled = false; btn.querySelector('span').textContent = '사진 저장';
+  }
+
+  // ── 삭제 ──
+  async function deleteItem(type, idx) {
+    if (!confirm('삭제할까요?')) return;
+    const before = JSON.parse(JSON.stringify(DATA[type]));
+    DATA[type].splice(idx, 1);
+    try {
+      await saveDataToGitHub();
+      showToast('🗑️ 삭제 완료', '');
+      renderAll();
+    } catch(e) { showToast('❌ 삭제 실패', 'red'); DATA[type] = before; }
+  }
+
+  // ── 토스트 ──
+  function showToast(msg, type='') {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.className = `toast show ${type}`;
+    setTimeout(() => t.className = 'toast', 2500);
+  }
+
+  // ── 세션 복구 ──
+  window.addEventListener('DOMContentLoaded', async () => {
+    const saved = sessionStorage.getItem('ychive_gh');
+    if (saved) {
+      GH = JSON.parse(saved);
+      document.getElementById('gh-user').value  = GH.user;
+      document.getElementById('gh-repo').value  = GH.repo;
+      document.getElementById('gh-token').value = GH.token;
+      const ok = await loadDataFromGitHub();
+      if (ok) { showMain(); return; }
+      sessionStorage.removeItem('ychive_gh');
+    }
+  });
+</script>
+</body>
+</html>
