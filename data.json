@@ -21,15 +21,6 @@
   ],
   "videos": [
     {
-      "date": "2026-05-21",
-      "title": "1.1이닝 무실점! 위기 상황을 깔끔하게 막아낸 최준용🔥 #수훈선수 #최준용",
-      "videoId": "mPDFGRtYDUo",
-      "channel": "Giants TV",
-      "tags": [
-        "인터뷰"
-      ]
-    },
-    {
       "date": "2026-05-02",
       "title": "\"지옥 같았던 4월 더 떨어질 곳 없어\" 최준용, 정훈과 인터뷰서 밝힌 다짐 | 인터뷰 | 2026 KBO리그 (26.05.01)",
       "videoId": "gOGVAe9_MJs",
@@ -52,6 +43,15 @@
       "title": "팀 승리를 이끈 최준용의 멀티 이닝 투구🔥 #수훈선수 #최준용",
       "videoId": "h_9yU0P4cB8",
       "channel": "Giants TV",
+      "tags": [
+        "인터뷰"
+      ]
+    },
+    {
+      "date": "2025-07-31",
+      "channel": "Giants TV",
+      "title": "1.1이닝 무실점! 위기 상황을 깔끔하게 막아낸 최준용🔥 #수훈선수 #최준용",
+      "videoId": "mPDFGRtYDUo",
       "tags": [
         "인터뷰"
       ]
