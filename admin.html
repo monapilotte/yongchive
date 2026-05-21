@@ -334,7 +334,8 @@
       </div>
       <div class="form-field">
         <label>기사 URL</label>
-        <input type="url" id="a-url" placeholder="https://..." />
+        <input type="url" id="a-url" placeholder="https://..." oninput="handleArticleUrl()" />
+        <div class="yt-autofill" id="a-autofill"></div>
       </div>
       <button class="btn-submit" id="a-submit" onclick="submitArticle()">
         <span>기사 저장</span>
@@ -536,6 +537,62 @@
 
   // ── 렌더 전체 ──
   function renderAll() { renderArticleList(); renderVideoList(); renderGalleryList(); }
+
+  // ── 기사 URL 자동완성 ──
+  let articleFillTimer = null;
+  async function handleArticleUrl() {
+    const url = document.getElementById('a-url').value.trim();
+    const autofill = document.getElementById('a-autofill');
+    if (!url.startsWith('http')) { autofill.textContent = ''; return; }
+
+    clearTimeout(articleFillTimer);
+    autofill.textContent = '정보 불러오는 중...';
+    autofill.className = 'yt-autofill loading';
+
+    articleFillTimer = setTimeout(async () => {
+      try {
+        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+        const res = await fetch(proxyUrl);
+        const data = await res.json();
+        const html = data.contents;
+
+        const getMeta = (names) => {
+          for (const name of names) {
+            const m = html.match(new RegExp(`<meta[^>]+(?:property|name)=["']${name}["'][^>]+content=["']([^"']+)["']`, 'i'))
+                  || html.match(new RegExp(`<meta[^>]+content=["']([^"']+)["'][^>]+(?:property|name)=["']${name}["']`, 'i'));
+            if (m) return m[1].trim();
+          }
+          return '';
+        };
+
+        const title   = getMeta(['og:title', 'twitter:title']);
+        const source  = getMeta(['og:site_name']) || new URL(url).hostname.replace('www.','');
+        const rawDate = getMeta(['article:published_time', 'og:article:published_time', 'datePublished', 'pubdate']);
+
+        let date = '';
+        if (rawDate) {
+          const d = new Date(rawDate);
+          if (!isNaN(d)) date = d.toISOString().slice(0, 10);
+        }
+
+        let filled = [];
+        if (title  && !document.getElementById('a-title').value)  { document.getElementById('a-title').value  = title;  filled.push('제목'); }
+        if (source && !document.getElementById('a-source').value) { document.getElementById('a-source').value = source; filled.push('매체'); }
+        if (date   && !document.getElementById('a-date').value)   { document.getElementById('a-date').value   = date;   filled.push('날짜'); }
+
+        if (filled.length) {
+          autofill.textContent = `✓ ${filled.join(' · ')} 자동완성 (수정 가능)`;
+          autofill.className = 'yt-autofill done';
+        } else {
+          autofill.textContent = '정보를 가져오지 못했어요 — 직접 입력해 주세요';
+          autofill.className = 'yt-autofill';
+        }
+      } catch(e) {
+        autofill.textContent = '자동완성 실패 — 직접 입력해 주세요';
+        autofill.className = 'yt-autofill';
+      }
+    }, 600);
+  }
 
   // ── 기사 ──
   function renderArticleList() {

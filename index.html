@@ -71,12 +71,6 @@
     .video-thumb { position: relative; width: 100%; padding-top: 56.25%; background: #111; overflow: hidden; }
     .video-thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 0.2s; }
     .video-card:hover .video-thumb img { transform: scale(1.03); }
-    .video-play {
-      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-      background: rgba(0,0,0,0.15); transition: background 0.2s;
-    }
-    .video-card:hover .video-play { background: rgba(0,0,0,0.3); }
-    .video-play svg { width: 44px; height: 44px; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4)); }
     .video-info { padding: 12px 14px; }
     .video-info h3 { font-size: 13px; font-weight: 500; line-height: 1.4; margin-bottom: 6px; }
     .video-meta { font-size: 11px; color: var(--text-sub); font-family: var(--mono); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
@@ -257,12 +251,6 @@
       <a class="video-card" href="https://www.youtube.com/watch?v=${v.videoId}" target="_blank">
         <div class="video-thumb">
           <img src="https://img.youtube.com/vi/${v.videoId}/mqdefault.jpg" alt="${v.title}" loading="lazy" />
-          <div class="video-play">
-            <svg viewBox="0 0 68 48" xmlns="http://www.w3.org/2000/svg">
-              <rect width="68" height="48" rx="10" fill="#ff0000" opacity="0.85"/>
-              <polygon points="26,14 26,34 48,24" fill="#fff"/>
-            </svg>
-          </div>
         </div>
         <div class="video-info">
           <h3>${v.title}</h3>
