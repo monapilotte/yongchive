@@ -172,6 +172,10 @@
         <input type="date" id="v-date-to" onchange="renderVideos()" />
         <button class="btn-date-clear" onclick="clearDateRange('v'); renderVideos()" title="날짜 초기화">✕</button>
       </div>
+      <label style="display:flex;align-items:center;gap:5px;cursor:pointer;flex-shrink:0">
+        <input type="checkbox" id="v-exclude-shorts" onchange="renderVideos()" style="width:14px;height:14px;accent-color:var(--accent)" />
+        <span style="font-family:var(--mono);font-size:11px;color:var(--text-sub);white-space:nowrap">쇼츠 제외</span>
+      </label>
       <button class="sort-btn active" id="v-sort-btn" onclick="toggleSort('v')">최신순 ↓</button>
     </div>
     <div class="tag-filters" id="video-tags" style="margin-bottom:14px"></div>
@@ -284,14 +288,16 @@
   }
 
   function renderVideos() {
-    const q    = document.getElementById('video-search').value.toLowerCase();
-    const from = document.getElementById('v-date-from').value;
-    const to   = document.getElementById('v-date-to').value;
+    const q           = document.getElementById('video-search').value.toLowerCase();
+    const from        = document.getElementById('v-date-from').value;
+    const to          = document.getElementById('v-date-to').value;
+    const noShorts    = document.getElementById('v-exclude-shorts').checked;
     let filtered = DATA.videos.filter(v =>
       (activeVideoTag==='all' || (v.tags||[]).includes(activeVideoTag)) &&
-      (!q    || v.title.toLowerCase().includes(q) || v.channel.toLowerCase().includes(q)) &&
-      (!from || v.date >= from) &&
-      (!to   || v.date <= to)
+      (!q       || v.title.toLowerCase().includes(q) || v.channel.toLowerCase().includes(q)) &&
+      (!from    || v.date >= from) &&
+      (!to      || v.date <= to) &&
+      (!noShorts || !(v.tags||[]).includes('쇼츠'))
     );
     filtered = [...filtered].sort((a,b) =>
       sortDesc.v ? b.date.localeCompare(a.date) : a.date.localeCompare(b.date)
