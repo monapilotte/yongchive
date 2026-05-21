@@ -612,6 +612,16 @@
     document.getElementById('v-iframe').src = `https://www.youtube.com/embed/${id}`;
     preview.style.display = 'block';
 
+    // 중복 체크
+    const dup = DATA.videos.find(v => v.videoId === id);
+    if (dup) {
+      autofill.textContent = `⚠️ 이미 등록된 영상이에요 — "${dup.title}" (${dup.date})`;
+      autofill.className = 'yt-autofill';
+      autofill.style.color = '#c0392b';
+    } else {
+      autofill.style.color = '';
+    }
+
     // 날짜 오늘로 자동설정
     const today = new Date().toISOString().slice(0,10);
     document.getElementById('v-date').value = today;
