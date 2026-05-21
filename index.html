@@ -56,6 +56,9 @@
     .tag-btn { font-family: var(--mono); font-size: 11px; border: 1px solid var(--border); border-radius: 20px; padding: 4px 10px; background: var(--surface); cursor: pointer; color: var(--text-sub); transition: all 0.15s; }
     .tag-btn:hover { border-color: var(--accent); color: var(--accent); }
     .tag-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .sort-btn { font-family: var(--mono); font-size: 11px; border: 1px solid var(--border); border-radius: var(--radius); padding: 5px 10px; background: var(--surface); cursor: pointer; color: var(--text-sub); transition: all 0.15s; white-space: nowrap; flex-shrink: 0; }
+    .sort-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .sort-btn.active { background: var(--accent-light); border-color: var(--accent); color: var(--accent); }
 
     /* ARTICLE LIST */
     .article-list { display: flex; flex-direction: column; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
@@ -152,6 +155,7 @@
         <input type="date" id="a-date-to" onchange="renderArticles()" />
         <button class="btn-date-clear" onclick="clearDateRange('a'); renderArticles()" title="날짜 초기화">✕</button>
       </div>
+      <button class="sort-btn active" id="a-sort-btn" onclick="toggleSort('a')">최신순 ↓</button>
     </div>
     <div class="tag-filters" id="article-tags" style="margin-bottom:14px"></div>
     <div class="result-count" id="article-count-label"></div>
@@ -168,6 +172,7 @@
         <input type="date" id="v-date-to" onchange="renderVideos()" />
         <button class="btn-date-clear" onclick="clearDateRange('v'); renderVideos()" title="날짜 초기화">✕</button>
       </div>
+      <button class="sort-btn active" id="v-sort-btn" onclick="toggleSort('v')">최신순 ↓</button>
     </div>
     <div class="tag-filters" id="video-tags" style="margin-bottom:14px"></div>
     <div class="result-count" id="video-count-label"></div>
@@ -200,6 +205,15 @@
 <script>
   let DATA = { articles: [], videos: [], gallery: [] };
   let activeArticleTag = 'all', activeVideoTag = 'all', lbIndex = 0;
+  let sortDesc = { a: true, v: true }; // true = 최신순, false = 오래된순
+
+  function toggleSort(prefix) {
+    sortDesc[prefix] = !sortDesc[prefix];
+    const btn = document.getElementById(`${prefix}-sort-btn`);
+    btn.textContent = sortDesc[prefix] ? '최신순 ↓' : '오래된순 ↑';
+    btn.classList.toggle('active', sortDesc[prefix]);
+    prefix === 'a' ? renderArticles() : renderVideos();
+  }
 
   async function loadData() {
     try {
@@ -246,11 +260,14 @@
     const q    = document.getElementById('article-search').value.toLowerCase();
     const from = document.getElementById('a-date-from').value;
     const to   = document.getElementById('a-date-to').value;
-    const filtered = DATA.articles.filter(a =>
+    let filtered = DATA.articles.filter(a =>
       (activeArticleTag==='all' || (a.tags||[]).includes(activeArticleTag)) &&
       (!q    || a.title.toLowerCase().includes(q) || a.source.toLowerCase().includes(q)) &&
       (!from || a.date >= from) &&
       (!to   || a.date <= to)
+    );
+    filtered = [...filtered].sort((a,b) =>
+      sortDesc.a ? b.date.localeCompare(a.date) : a.date.localeCompare(b.date)
     );
     document.getElementById('article-count-label').textContent = `${filtered.length}건 / 전체 ${DATA.articles.length}건`;
     if (!filtered.length) { document.getElementById('article-list').innerHTML = '<div class="empty-state">검색 결과가 없습니다.</div>'; return; }
@@ -270,11 +287,14 @@
     const q    = document.getElementById('video-search').value.toLowerCase();
     const from = document.getElementById('v-date-from').value;
     const to   = document.getElementById('v-date-to').value;
-    const filtered = DATA.videos.filter(v =>
+    let filtered = DATA.videos.filter(v =>
       (activeVideoTag==='all' || (v.tags||[]).includes(activeVideoTag)) &&
       (!q    || v.title.toLowerCase().includes(q) || v.channel.toLowerCase().includes(q)) &&
       (!from || v.date >= from) &&
       (!to   || v.date <= to)
+    );
+    filtered = [...filtered].sort((a,b) =>
+      sortDesc.v ? b.date.localeCompare(a.date) : a.date.localeCompare(b.date)
     );
     document.getElementById('video-count-label').textContent = `${filtered.length}건 / 전체 ${DATA.videos.length}건`;
     if (!filtered.length) { document.getElementById('video-grid').innerHTML = '<div class="empty-state">검색 결과가 없습니다.</div>'; return; }
