@@ -46,6 +46,12 @@
     .toolbar { display: flex; gap: 10px; align-items: center; margin-bottom: 16px; flex-wrap: wrap; }
     .search-box { flex: 1; min-width: 180px; font-family: var(--sans); font-size: 13px; border: 1px solid var(--border); border-radius: var(--radius); padding: 8px 12px; background: var(--surface); outline: none; transition: border-color 0.15s; }
     .search-box:focus { border-color: var(--accent); }
+    .date-range { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+    .date-range input { font-family: var(--mono); font-size: 12px; border: 1px solid var(--border); border-radius: var(--radius); padding: 7px 10px; background: var(--surface); outline: none; color: var(--text); transition: border-color 0.15s; width: 130px; }
+    .date-range input:focus { border-color: var(--accent); }
+    .date-range span { font-family: var(--mono); font-size: 11px; color: var(--text-sub); }
+    .btn-date-clear { font-family: var(--mono); font-size: 11px; color: var(--text-sub); background: none; border: none; cursor: pointer; padding: 4px; }
+    .btn-date-clear:hover { color: var(--accent); }
     .tag-filters { display: flex; gap: 6px; flex-wrap: wrap; }
     .tag-btn { font-family: var(--mono); font-size: 11px; border: 1px solid var(--border); border-radius: 20px; padding: 4px 10px; background: var(--surface); cursor: pointer; color: var(--text-sub); transition: all 0.15s; }
     .tag-btn:hover { border-color: var(--accent); color: var(--accent); }
@@ -140,8 +146,14 @@
   <div id="tab-articles" class="tab-section active">
     <div class="toolbar">
       <input class="search-box" type="text" id="article-search" placeholder="기사 제목 검색..." oninput="renderArticles()" />
-      <div class="tag-filters" id="article-tags"></div>
+      <div class="date-range">
+        <input type="date" id="a-date-from" onchange="renderArticles()" />
+        <span>~</span>
+        <input type="date" id="a-date-to" onchange="renderArticles()" />
+        <button class="btn-date-clear" onclick="clearDateRange('a'); renderArticles()" title="날짜 초기화">✕</button>
+      </div>
     </div>
+    <div class="tag-filters" id="article-tags" style="margin-bottom:14px"></div>
     <div class="result-count" id="article-count-label"></div>
     <div id="article-list"></div>
   </div>
@@ -150,8 +162,14 @@
   <div id="tab-videos" class="tab-section">
     <div class="toolbar">
       <input class="search-box" type="text" id="video-search" placeholder="영상 제목 검색..." oninput="renderVideos()" />
-      <div class="tag-filters" id="video-tags"></div>
+      <div class="date-range">
+        <input type="date" id="v-date-from" onchange="renderVideos()" />
+        <span>~</span>
+        <input type="date" id="v-date-to" onchange="renderVideos()" />
+        <button class="btn-date-clear" onclick="clearDateRange('v'); renderVideos()" title="날짜 초기화">✕</button>
+      </div>
     </div>
+    <div class="tag-filters" id="video-tags" style="margin-bottom:14px"></div>
     <div class="result-count" id="video-count-label"></div>
     <div id="video-grid" class="video-grid"></div>
   </div>
@@ -219,11 +237,20 @@
     btn.classList.add('active'); renderVideos();
   }
 
+  function clearDateRange(prefix) {
+    document.getElementById(`${prefix}-date-from`).value = '';
+    document.getElementById(`${prefix}-date-to`).value = '';
+  }
+
   function renderArticles() {
-    const q = document.getElementById('article-search').value.toLowerCase();
+    const q    = document.getElementById('article-search').value.toLowerCase();
+    const from = document.getElementById('a-date-from').value;
+    const to   = document.getElementById('a-date-to').value;
     const filtered = DATA.articles.filter(a =>
       (activeArticleTag==='all' || (a.tags||[]).includes(activeArticleTag)) &&
-      (!q || a.title.toLowerCase().includes(q) || a.source.toLowerCase().includes(q))
+      (!q    || a.title.toLowerCase().includes(q) || a.source.toLowerCase().includes(q)) &&
+      (!from || a.date >= from) &&
+      (!to   || a.date <= to)
     );
     document.getElementById('article-count-label').textContent = `${filtered.length}건 / 전체 ${DATA.articles.length}건`;
     if (!filtered.length) { document.getElementById('article-list').innerHTML = '<div class="empty-state">검색 결과가 없습니다.</div>'; return; }
@@ -240,10 +267,14 @@
   }
 
   function renderVideos() {
-    const q = document.getElementById('video-search').value.toLowerCase();
+    const q    = document.getElementById('video-search').value.toLowerCase();
+    const from = document.getElementById('v-date-from').value;
+    const to   = document.getElementById('v-date-to').value;
     const filtered = DATA.videos.filter(v =>
       (activeVideoTag==='all' || (v.tags||[]).includes(activeVideoTag)) &&
-      (!q || v.title.toLowerCase().includes(q) || v.channel.toLowerCase().includes(q))
+      (!q    || v.title.toLowerCase().includes(q) || v.channel.toLowerCase().includes(q)) &&
+      (!from || v.date >= from) &&
+      (!to   || v.date <= to)
     );
     document.getElementById('video-count-label').textContent = `${filtered.length}건 / 전체 ${DATA.videos.length}건`;
     if (!filtered.length) { document.getElementById('video-grid').innerHTML = '<div class="empty-state">검색 결과가 없습니다.</div>'; return; }
