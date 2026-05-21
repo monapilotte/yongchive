@@ -139,19 +139,96 @@
     .video-meta { font-size: 11px; color: var(--text-sub); font-family: var(--mono); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 
     /* GALLERY */
-    .gallery-note {
-      background: var(--accent-light); border: 1px solid #c5d4ee;
-      border-radius: var(--radius); padding: 14px 16px;
-      font-size: 13px; color: var(--accent); margin-bottom: 20px; line-height: 1.6;
-    }
     .gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
     .gallery-cell {
       aspect-ratio: 1; background: var(--surface);
       border: 1px solid var(--border); border-radius: var(--radius);
       overflow: hidden; display: flex; align-items: center; justify-content: center;
       font-family: var(--mono); font-size: 11px; color: var(--text-sub);
+      cursor: pointer; position: relative;
     }
-    .gallery-cell img { width: 100%; height: 100%; object-fit: cover; }
+    .gallery-cell img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.2s; }
+    .gallery-cell:hover img { transform: scale(1.04); }
+
+    /* 입력 패널 */
+    .input-panel {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 16px 20px; margin-bottom: 24px;
+    }
+    .input-panel summary {
+      font-size: 13px; font-weight: 500; cursor: pointer;
+      color: var(--accent); list-style: none; display: flex; align-items: center; gap: 6px;
+    }
+    .input-panel summary::-webkit-details-marker { display: none; }
+    .input-panel summary::before { content: '＋'; font-size: 15px; }
+    details[open] > summary::before { content: '－'; }
+    .panel-body { margin-top: 16px; display: flex; flex-direction: column; gap: 10px; }
+    .input-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .input-row input, .input-row textarea, .input-row select {
+      font-family: var(--sans); font-size: 13px;
+      border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 8px 10px; background: var(--bg); outline: none;
+      transition: border-color 0.15s; flex: 1; min-width: 140px;
+    }
+    .input-row input:focus, .input-row textarea:focus { border-color: var(--accent); background: #fff; }
+    .input-row textarea { resize: vertical; min-height: 80px; font-size: 12px; }
+    .btn-gen {
+      font-family: var(--mono); font-size: 12px;
+      background: var(--accent); color: #fff; border: none;
+      border-radius: var(--radius); padding: 9px 18px; cursor: pointer;
+      transition: opacity 0.15s; white-space: nowrap;
+    }
+    .btn-gen:hover { opacity: 0.85; }
+    .btn-gen.green { background: #2d6a4f; }
+    .btn-copy {
+      font-family: var(--mono); font-size: 11px;
+      background: var(--bg); color: var(--accent);
+      border: 1px solid var(--accent); border-radius: var(--radius);
+      padding: 6px 14px; cursor: pointer; transition: background 0.15s; align-self: flex-start;
+    }
+    .btn-copy:hover { background: var(--accent-light); }
+    .json-output {
+      font-family: var(--mono); font-size: 12px;
+      background: #1a1a1a; color: #a8d8a8;
+      border-radius: var(--radius); padding: 14px;
+      white-space: pre-wrap; overflow-x: auto; line-height: 1.6;
+    }
+    .output-label { font-family: var(--mono); font-size: 11px; color: var(--text-sub); }
+    .output-block { display: flex; flex-direction: column; gap: 8px; }
+    .gallery-preview-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 8px;
+    }
+    .gallery-preview-grid img {
+      width: 100%; aspect-ratio: 1; object-fit: cover;
+      border-radius: var(--radius); border: 1px solid var(--border);
+    }
+    .preview-err {
+      aspect-ratio: 1; background: var(--bg);
+      border: 1px dashed var(--border); border-radius: var(--radius);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--mono); font-size: 10px; color: var(--text-sub);
+    }
+
+    /* 라이트박스 */
+    .lightbox {
+      display: none; position: fixed; inset: 0; z-index: 999;
+      background: rgba(0,0,0,0.88); align-items: center; justify-content: center;
+    }
+    .lightbox.open { display: flex; }
+    .lightbox img { max-width: 90vw; max-height: 88vh; border-radius: 4px; }
+    .lightbox-close {
+      position: absolute; top: 20px; right: 28px;
+      font-size: 28px; color: #fff; cursor: pointer; line-height: 1;
+    }
+    .lb-nav {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      font-size: 28px; color: #fff; cursor: pointer;
+      background: rgba(0,0,0,0.3); border: none;
+      padding: 8px 14px; border-radius: 4px; transition: background 0.15s;
+    }
+    .lb-nav:hover { background: rgba(0,0,0,0.6); }
+    #lb-prev { left: 16px; }
+    #lb-next { right: 16px; }
 
     /* RESULT COUNT */
     .result-count {
@@ -165,6 +242,8 @@
       padding: 20px 24px; text-align: center;
       font-family: var(--mono); font-size: 11px; color: var(--text-sub);
     }
+    footer a { color: var(--text-sub); text-decoration: none; }
+    footer a:hover { color: var(--accent); }
 
     @media (max-width: 600px) {
       .hero { flex-direction: column; align-items: flex-start; }
@@ -179,7 +258,7 @@
 
 <header>
   <div class="header-inner">
-    <div class="site-title">최준용 <span>Archive</span></div>
+    <div class="site-title">YONG<span>chive</span></div>
   </div>
 </header>
 
@@ -188,11 +267,12 @@
     <div class="hero-badge">LOTTE GIANTS</div>
     <div style="height:8px"></div>
     <div class="hero-name">최준용</div>
-    <div class="hero-sub"> 2001. 10. 10. · #56</div> <!-- ✏️ 수정하세요 -->
+    <div class="hero-sub">2001. 10. 10. · #56</div>
   </div>
   <div class="hero-stats">
     <div class="stat-item"><label>기사</label><span id="stat-articles">-</span></div>
     <div class="stat-item"><label>영상</label><span id="stat-videos">-</span></div>
+    <div class="stat-item"><label>사진</label><span id="stat-gallery">-</span></div>
   </div>
 </div>
 
@@ -206,6 +286,35 @@
 
   <!-- 기사 탭 -->
   <div id="tab-articles" class="tab-section active">
+
+    <details class="input-panel">
+      <summary>기사 추가하기</summary>
+      <div class="panel-body">
+        <div class="input-row">
+          <input type="date" id="a-date" />
+          <input type="text" id="a-source" placeholder="매체명 (예: 스포츠조선)" style="max-width:200px" />
+        </div>
+        <div class="input-row">
+          <input type="text" id="a-title" placeholder="기사 제목" />
+        </div>
+        <div class="input-row">
+          <input type="url" id="a-url" placeholder="기사 URL (https://...)" />
+          <select id="a-tag">
+            <option value="경기">경기</option>
+            <option value="인터뷰">인터뷰</option>
+            <option value="훈련">훈련</option>
+            <option value="수상">수상</option>
+            <option value="기타">기타</option>
+          </select>
+          <button class="btn-gen" onclick="genArticleJSON()">JSON 생성</button>
+        </div>
+        <div class="output-block" id="a-output" style="display:none">
+          <div class="output-label">👇 data.json의 "articles" 배열 맨 앞에 붙여넣으세요</div>
+          <div class="json-output" id="a-json"></div>
+          <button class="btn-copy" onclick="copyText('a-json', this)">📋 복사</button>
+        </div>
+      </div>
+    </details>
     <div class="toolbar">
       <input class="search-box" type="text" id="article-search" placeholder="기사 제목 검색..." oninput="renderArticles()" />
       <div class="tag-filters" id="article-tags"></div>
@@ -216,6 +325,40 @@
 
   <!-- 영상 탭 -->
   <div id="tab-videos" class="tab-section">
+
+    <details class="input-panel">
+      <summary>영상 추가하기</summary>
+      <div class="panel-body">
+        <div class="input-row">
+          <input type="url" id="v-url" placeholder="유튜브 URL 붙여넣기" oninput="previewVideo()" />
+        </div>
+        <div id="v-preview" style="display:none; margin:4px 0;">
+          <div class="output-label" style="margin-bottom:6px">📺 미리보기</div>
+          <iframe id="v-iframe" width="320" height="180" frameborder="0" allowfullscreen
+            style="border-radius:var(--radius);border:1px solid var(--border)"></iframe>
+        </div>
+        <div class="input-row">
+          <input type="date" id="v-date" />
+          <input type="text" id="v-channel" placeholder="채널명" style="max-width:200px" />
+        </div>
+        <div class="input-row">
+          <input type="text" id="v-title" placeholder="영상 제목" />
+          <select id="v-tag">
+            <option value="인터뷰">인터뷰</option>
+            <option value="경기">경기</option>
+            <option value="훈련">훈련</option>
+            <option value="예능">예능</option>
+            <option value="기타">기타</option>
+          </select>
+          <button class="btn-gen" onclick="genVideoJSON()">JSON 생성</button>
+        </div>
+        <div class="output-block" id="v-output" style="display:none">
+          <div class="output-label">👇 data.json의 "videos" 배열 맨 앞에 붙여넣으세요</div>
+          <div class="json-output" id="v-json"></div>
+          <button class="btn-copy" onclick="copyText('v-json', this)">📋 복사</button>
+        </div>
+      </div>
+    </details>
     <div class="toolbar">
       <input class="search-box" type="text" id="video-search" placeholder="영상 제목 검색..." oninput="renderVideos()" />
       <div class="tag-filters" id="video-tags"></div>
@@ -226,138 +369,118 @@
 
   <!-- 갤러리 탭 -->
   <div id="tab-gallery" class="tab-section">
-    <div class="gallery-note">
-      💡 <strong>갤러리 사용법</strong>:
-      <a href="https://mirr1308.github.io/utils/autogallery/" target="_blank" style="color:var(--accent)">autogallery 도구</a>에서
-      HTML 코드 생성 후 아래 gallery-grid 안에 <code>&lt;img&gt;</code> 태그를 붙여넣으세요.
-    </div>
-    <div class="gallery-grid" id="gallery-grid">
-      <!-- autogallery에서 생성한 img 태그를 여기에 붙여넣기 -->
-      <div class="gallery-cell">사진 1</div>
-      <div class="gallery-cell">사진 2</div>
-      <div class="gallery-cell">사진 3</div>
-    </div>
+
+    <details class="input-panel">
+      <summary>사진 추가하기</summary>
+      <div class="panel-body">
+        <div class="output-label" style="color:var(--text)">이미지 URL을 한 줄에 하나씩 붙여넣으세요</div>
+        <div class="input-row">
+          <textarea id="g-urls" placeholder="https://example.com/photo1.jpg&#10;https://example.com/photo2.jpg"></textarea>
+        </div>
+        <div class="input-row">
+          <button class="btn-gen" onclick="previewGallery()">미리보기</button>
+          <button class="btn-gen green" onclick="genGalleryJSON()">JSON 생성</button>
+        </div>
+        <div id="g-preview-wrap" style="display:none">
+          <div class="output-label">📷 미리보기</div>
+          <div class="gallery-preview-grid" id="g-preview"></div>
+        </div>
+        <div class="output-block" id="g-output" style="display:none">
+          <div class="output-label">👇 data.json의 "gallery" 배열 안에 붙여넣으세요</div>
+          <div class="json-output" id="g-json"></div>
+          <button class="btn-copy" onclick="copyText('g-json', this)">📋 복사</button>
+        </div>
+      </div>
+    </details>
+
+    <div class="result-count" id="gallery-count-label"></div>
+    <div class="gallery-grid" id="gallery-grid"></div>
   </div>
 
 </div>
 
-<footer><a href="https://spin-spin.com/monapi_lotte">monapi_lotte</a></footer>
+<footer>
+  <a href="https://spin-spin.com/monapi_lotte" target="_blank">monapi_lotte</a>
+</footer>
 
 <script>
-  let DATA = { articles: [], videos: [] };
-  let activeArticleTag = 'all';
-  let activeVideoTag = 'all';
+  let DATA = { articles: [], videos: [], gallery: [] };
+  let activeArticleTag = 'all', activeVideoTag = 'all', lbIndex = 0;
 
   // ── 데이터 로드 ──
   async function loadData() {
     try {
-      const res = await fetch('data.json?t=' + Date.now()); // 캐시 방지
+      const res = await fetch('data.json?t=' + Date.now());
       DATA = await res.json();
+      if (!DATA.gallery) DATA.gallery = [];
     } catch(e) {
-      // 로컬 테스트 fallback: 샘플 데이터
       DATA = {
         articles: [
-          { date: "2025-05-21", title: "예시) dd", url: "#", source: "스포츠조선", tags: ["경기"] },
-          { date: "2025-05-18", title: "예시) ff", url: "#", source: "MK스포츠", tags: ["인터뷰"] }
+          { date:"2025-05-21", title:"예시) 최준용, 시즌 첫 선발 등판 호투 5이닝 1실점", url:"#", source:"스포츠조선", tags:["경기"] },
+          { date:"2025-05-18", title:"예시) 최준용 인터뷰 \"올 시즌 목표는 두 자릿수 승리\"", url:"#", source:"MK스포츠", tags:["인터뷰"] }
         ],
         videos: [
-          { date: "2025-05-19", title: "예시) gg", videoId: "dQw4w9WgXcQ", channel: "KBO 공식", tags: ["인터뷰"] }
-        ]
+          { date:"2025-05-19", title:"예시) 최준용 인터뷰 - 시즌 목표와 각오", videoId:"dQw4w9WgXcQ", channel:"KBO 공식", tags:["인터뷰"] }
+        ],
+        gallery: []
       };
     }
-
-    // 날짜 최신순 정렬
-    DATA.articles.sort((a, b) => b.date.localeCompare(a.date));
-    DATA.videos.sort((a, b) => b.date.localeCompare(a.date));
-
-    // 통계
+    DATA.articles.sort((a,b) => b.date.localeCompare(a.date));
+    DATA.videos.sort((a,b) => b.date.localeCompare(a.date));
     document.getElementById('stat-articles').textContent = DATA.articles.length;
     document.getElementById('stat-videos').textContent = DATA.videos.length;
-
-    buildTagFilters();
-    renderArticles();
-    renderVideos();
+    document.getElementById('stat-gallery').textContent = DATA.gallery.length;
+    buildTagFilters(); renderArticles(); renderVideos(); renderGallery();
   }
 
-  // ── 태그 필터 버튼 생성 ──
   function buildTagFilters() {
-    const aTags = ['all', ...new Set(DATA.articles.flatMap(a => a.tags || []))];
-    const vTags = ['all', ...new Set(DATA.videos.flatMap(v => v.tags || []))];
-
+    const aTags = ['all', ...new Set(DATA.articles.flatMap(a => a.tags||[]))];
+    const vTags = ['all', ...new Set(DATA.videos.flatMap(v => v.tags||[]))];
     document.getElementById('article-tags').innerHTML = aTags.map(t =>
-      `<button class="tag-btn ${t === 'all' ? 'active' : ''}" onclick="setArticleTag('${t}', this)">${t === 'all' ? '전체' : t}</button>`
-    ).join('');
-
+      `<button class="tag-btn ${t==='all'?'active':''}" onclick="setArticleTag('${t}',this)">${t==='all'?'전체':t}</button>`).join('');
     document.getElementById('video-tags').innerHTML = vTags.map(t =>
-      `<button class="tag-btn ${t === 'all' ? 'active' : ''}" onclick="setVideoTag('${t}', this)">${t === 'all' ? '전체' : t}</button>`
-    ).join('');
+      `<button class="tag-btn ${t==='all'?'active':''}" onclick="setVideoTag('${t}',this)">${t==='all'?'전체':t}</button>`).join('');
+  }
+  function setArticleTag(tag,btn) {
+    activeArticleTag=tag;
+    document.querySelectorAll('#article-tags .tag-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active'); renderArticles();
+  }
+  function setVideoTag(tag,btn) {
+    activeVideoTag=tag;
+    document.querySelectorAll('#video-tags .tag-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active'); renderVideos();
   }
 
-  function setArticleTag(tag, btn) {
-    activeArticleTag = tag;
-    document.querySelectorAll('#article-tags .tag-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    renderArticles();
-  }
-  function setVideoTag(tag, btn) {
-    activeVideoTag = tag;
-    document.querySelectorAll('#video-tags .tag-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    renderVideos();
-  }
-
-  // ── 기사 렌더 ──
   function renderArticles() {
     const q = document.getElementById('article-search').value.toLowerCase();
     const filtered = DATA.articles.filter(a => {
-      const matchTag = activeArticleTag === 'all' || (a.tags || []).includes(activeArticleTag);
-      const matchQ = !q || a.title.toLowerCase().includes(q) || a.source.toLowerCase().includes(q);
-      return matchTag && matchQ;
+      return (activeArticleTag==='all' || (a.tags||[]).includes(activeArticleTag)) &&
+             (!q || a.title.toLowerCase().includes(q) || a.source.toLowerCase().includes(q));
     });
-
-    document.getElementById('article-count-label').textContent =
-      `${filtered.length}건 / 전체 ${DATA.articles.length}건`;
-
-    if (filtered.length === 0) {
-      document.getElementById('article-list').innerHTML =
-        '<div class="empty-state">검색 결과가 없습니다.</div>';
-      return;
-    }
-
-    document.getElementById('article-list').innerHTML =
-      '<div class="article-list">' +
-      filtered.map(a => `
+    document.getElementById('article-count-label').textContent = `${filtered.length}건 / 전체 ${DATA.articles.length}건`;
+    if (!filtered.length) { document.getElementById('article-list').innerHTML='<div class="empty-state">검색 결과가 없습니다.</div>'; return; }
+    document.getElementById('article-list').innerHTML = '<div class="article-list">' +
+      filtered.map(a=>`
         <a class="article-item" href="${a.url}" target="_blank">
           <span class="article-date">${a.date}</span>
           <span class="article-title">${a.title}</span>
           <span class="article-right">
-            ${(a.tags||[]).map(t => `<span class="item-tag">${t}</span>`).join('')}
+            ${(a.tags||[]).map(t=>`<span class="item-tag">${t}</span>`).join('')}
             <span class="article-source">${a.source}</span>
           </span>
-        </a>
-      `).join('') +
-      '</div>';
+        </a>`).join('') + '</div>';
   }
 
-  // ── 영상 렌더 ──
   function renderVideos() {
     const q = document.getElementById('video-search').value.toLowerCase();
     const filtered = DATA.videos.filter(v => {
-      const matchTag = activeVideoTag === 'all' || (v.tags || []).includes(activeVideoTag);
-      const matchQ = !q || v.title.toLowerCase().includes(q) || v.channel.toLowerCase().includes(q);
-      return matchTag && matchQ;
+      return (activeVideoTag==='all' || (v.tags||[]).includes(activeVideoTag)) &&
+             (!q || v.title.toLowerCase().includes(q) || v.channel.toLowerCase().includes(q));
     });
-
-    document.getElementById('video-count-label').textContent =
-      `${filtered.length}건 / 전체 ${DATA.videos.length}건`;
-
-    if (filtered.length === 0) {
-      document.getElementById('video-grid').innerHTML =
-        '<div class="empty-state">검색 결과가 없습니다.</div>';
-      return;
-    }
-
-    document.getElementById('video-grid').innerHTML = filtered.map(v => `
+    document.getElementById('video-count-label').textContent = `${filtered.length}건 / 전체 ${DATA.videos.length}건`;
+    if (!filtered.length) { document.getElementById('video-grid').innerHTML='<div class="empty-state">검색 결과가 없습니다.</div>'; return; }
+    document.getElementById('video-grid').innerHTML = filtered.map(v=>`
       <div class="video-card">
         <div class="video-thumb">
           <iframe src="https://www.youtube.com/embed/${v.videoId}" allowfullscreen loading="lazy"></iframe>
@@ -365,21 +488,111 @@
         <div class="video-info">
           <h3>${v.title}</h3>
           <div class="video-meta">
-            <span>${v.date}</span>
-            <span>·</span>
-            <span>${v.channel}</span>
-            ${(v.tags||[]).map(t => `<span class="item-tag">${t}</span>`).join('')}
+            <span>${v.date}</span><span>·</span><span>${v.channel}</span>
+            ${(v.tags||[]).map(t=>`<span class="item-tag">${t}</span>`).join('')}
           </div>
         </div>
-      </div>
-    `).join('');
+      </div>`).join('');
   }
 
-  // ── 탭 전환 ──
-  function switchTab(name, btn) {
-    document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('tab-' + name).classList.add('active');
+  function renderGallery() {
+    const imgs = DATA.gallery;
+    document.getElementById('stat-gallery').textContent = imgs.length;
+    document.getElementById('gallery-count-label').textContent = `${imgs.length}장`;
+    if (!imgs.length) {
+      document.getElementById('gallery-grid').innerHTML='<div class="empty-state" style="grid-column:1/-1">사진이 없습니다. 위 패널에서 추가하세요.</div>';
+      return;
+    }
+    document.getElementById('gallery-grid').innerHTML = imgs.map((url,i)=>`
+      <div class="gallery-cell" onclick="openLb(${i})">
+        <img src="${url}" alt="사진 ${i+1}" loading="lazy" onerror="this.parentElement.innerHTML='<span>로드 실패</span>'" />
+      </div>`).join('');
+  }
+
+  // ── 라이트박스 ──
+  function openLb(i) {
+    lbIndex=i;
+    document.getElementById('lb-img').src=DATA.gallery[i];
+    document.getElementById('lightbox').classList.add('open');
+  }
+  function closeLb() { document.getElementById('lightbox').classList.remove('open'); }
+  function closeLbOverlay(e) { if(e.target===document.getElementById('lightbox')) closeLb(); }
+  function lbNav(dir) {
+    lbIndex=(lbIndex+dir+DATA.gallery.length)%DATA.gallery.length;
+    document.getElementById('lb-img').src=DATA.gallery[lbIndex];
+  }
+  document.addEventListener('keydown', e=>{
+    if(!document.getElementById('lightbox').classList.contains('open')) return;
+    if(e.key==='ArrowLeft') lbNav(-1);
+    if(e.key==='ArrowRight') lbNav(1);
+    if(e.key==='Escape') closeLb();
+  });
+
+  // ── 유튜브 ID 추출 ──
+  function extractVideoId(url) {
+    const patterns=[/[?&]v=([^&#]+)/,/youtu\.be\/([^?&#]+)/,/shorts\/([^?&#]+)/,/embed\/([^?&#]+)/];
+    for(const p of patterns){const m=url.match(p);if(m)return m[1];}
+    return null;
+  }
+
+  function previewVideo() {
+    const id=extractVideoId(document.getElementById('v-url').value.trim());
+    const wrap=document.getElementById('v-preview');
+    if(id){document.getElementById('v-iframe').src=`https://www.youtube.com/embed/${id}`;wrap.style.display='block';}
+    else wrap.style.display='none';
+  }
+
+  // ── JSON 생성 ──
+  function showOutput(id) {
+    const el=document.getElementById(id);
+    el.style.display='flex'; el.style.flexDirection='column'; el.style.gap='8px';
+  }
+  function genArticleJSON() {
+    const date=document.getElementById('a-date').value;
+    const source=document.getElementById('a-source').value.trim();
+    const title=document.getElementById('a-title').value.trim();
+    const url=document.getElementById('a-url').value.trim();
+    const tag=document.getElementById('a-tag').value;
+    if(!date||!title||!url){alert('날짜, 제목, URL은 필수입니다.');return;}
+    document.getElementById('a-json').textContent=`{ "date": "${date}", "title": "${title.replace(/"/g,'\\"')}", "url": "${url}", "source": "${source}", "tags": ["${tag}"] },`;
+    showOutput('a-output');
+  }
+  function genVideoJSON() {
+    const url=document.getElementById('v-url').value.trim();
+    const id=extractVideoId(url);
+    if(!id){alert('유효한 유튜브 URL을 입력해 주세요.');return;}
+    const date=document.getElementById('v-date').value;
+    const channel=document.getElementById('v-channel').value.trim();
+    const title=document.getElementById('v-title').value.trim();
+    const tag=document.getElementById('v-tag').value;
+    if(!date||!title){alert('날짜와 제목은 필수입니다.');return;}
+    document.getElementById('v-json').textContent=`{ "date": "${date}", "title": "${title.replace(/"/g,'\\"')}", "videoId": "${id}", "channel": "${channel}", "tags": ["${tag}"] },`;
+    showOutput('v-output');
+  }
+  function previewGallery() {
+    const urls=document.getElementById('g-urls').value.trim().split('\n').map(u=>u.trim()).filter(Boolean);
+    if(!urls.length)return;
+    document.getElementById('g-preview-wrap').style.display='block';
+    document.getElementById('g-preview').innerHTML=urls.map(u=>
+      `<img src="${u}" alt="" onerror="this.outerHTML='<div class=preview-err>로드 실패</div>'">`).join('');
+  }
+  function genGalleryJSON() {
+    const urls=document.getElementById('g-urls').value.trim().split('\n').map(u=>u.trim()).filter(Boolean);
+    if(!urls.length){alert('URL을 입력해 주세요.');return;}
+    document.getElementById('g-json').textContent=urls.map(u=>`  "${u}"`).join(',\n');
+    showOutput('g-output');
+  }
+  function copyText(id,btn) {
+    navigator.clipboard.writeText(document.getElementById(id).textContent).then(()=>{
+      const orig=btn.textContent; btn.textContent='✅ 복사됨!';
+      setTimeout(()=>btn.textContent=orig,1500);
+    });
+  }
+
+  function switchTab(name,btn) {
+    document.querySelectorAll('.tab-section').forEach(s=>s.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.getElementById('tab-'+name).classList.add('active');
     btn.classList.add('active');
   }
 
