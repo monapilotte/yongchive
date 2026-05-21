@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>최준용 아카이브</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f5f4f0;
+      --surface: #ffffff;
+      --border: #e0ddd6;
+      --text: #1a1a1a;
+      --text-sub: #777;
+      --accent: #1a4fa0;
+      --accent-light: #e8eef8;
+      --mono: 'DM Mono', monospace;
+      --sans: 'Noto Sans KR', sans-serif;
+      --radius: 6px;
+    }
+
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header-inner {
+      max-width: 960px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 56px;
+    }
+    .site-title {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+    .site-title span {
+      color: var(--accent);
+    }
+    nav {
+      display: flex;
+      gap: 4px;
+    }
+    nav a {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-sub);
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: var(--radius);
+      transition: background 0.15s, color 0.15s;
+    }
+    nav a:hover, nav a.active {
+      background: var(--accent-light);
+      color: var(--accent);
+    }
+
+    /* ── HERO ── */
+    .hero {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 40px 24px 28px;
+      display: flex;
+      align-items: flex-end;
+      gap: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .hero-badge {
+      font-family: var(--mono);
+      font-size: 11px;
+      background: var(--accent);
+      color: #fff;
+      padding: 3px 8px;
+      border-radius: 3px;
+      letter-spacing: 0.5px;
+    }
+    .hero-name {
+      font-size: 36px;
+      font-weight: 700;
+      letter-spacing: -1px;
+      line-height: 1;
+    }
+    .hero-sub {
+      font-size: 13px;
+      color: var(--text-sub);
+      margin-top: 6px;
+    }
+    .hero-stats {
+      margin-left: auto;
+      display: flex;
+      gap: 24px;
+      text-align: center;
+    }
+    .stat-item label {
+      display: block;
+      font-size: 11px;
+      color: var(--text-sub);
+      font-family: var(--mono);
+      margin-bottom: 2px;
+    }
+    .stat-item span {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    /* ── MAIN LAYOUT ── */
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 32px 24px;
+    }
+
+    /* ── TABS ── */
+    .tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 28px;
+    }
+    .tab-btn {
+      font-family: var(--sans);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-sub);
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      padding: 10px 16px;
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s;
+      margin-bottom: -1px;
+    }
+    .tab-btn:hover { color: var(--text); }
+    .tab-btn.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    /* ── SECTION CONTENT ── */
+    .tab-section { display: none; }
+    .tab-section.active { display: block; }
+
+    /* ── ARTICLES ── */
+    .article-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .article-item {
+      background: var(--surface);
+      display: grid;
+      grid-template-columns: 90px 1fr auto;
+      align-items: center;
+      gap: 16px;
+      padding: 14px 16px;
+      text-decoration: none;
+      color: inherit;
+      transition: background 0.1s;
+    }
+    .article-item:hover { background: #fafafa; }
+    .article-date {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-sub);
+    }
+    .article-title {
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.4;
+    }
+    .article-source {
+      font-size: 11px;
+      color: var(--text-sub);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 2px 7px;
+      white-space: nowrap;
+    }
+    .section-add-hint {
+      margin-top: 16px;
+      font-size: 12px;
+      color: var(--text-sub);
+      font-family: var(--mono);
+      padding: 10px 14px;
+      border: 1px dashed var(--border);
+      border-radius: var(--radius);
+    }
+
+    /* ── VIDEOS ── */
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    .video-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: box-shadow 0.15s;
+    }
+    .video-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+    .video-thumb {
+      position: relative;
+      width: 100%;
+      padding-top: 56.25%;
+      background: #111;
+    }
+    .video-thumb iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    .video-thumb .placeholder {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #555;
+      font-size: 12px;
+      font-family: var(--mono);
+    }
+    .video-info {
+      padding: 12px 14px;
+    }
+    .video-info h3 {
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 1.4;
+      margin-bottom: 4px;
+    }
+    .video-meta {
+      font-size: 11px;
+      color: var(--text-sub);
+      font-family: var(--mono);
+    }
+
+    /* ── GALLERY ── */
+    .gallery-note {
+      background: var(--accent-light);
+      border: 1px solid #c5d4ee;
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      font-size: 13px;
+      color: var(--accent);
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    .gallery-cell {
+      aspect-ratio: 1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-sub);
+    }
+    .gallery-cell img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      margin-top: 60px;
+      padding: 20px 24px;
+      text-align: center;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-sub);
+    }
+
+    @media (max-width: 600px) {
+      .hero { flex-direction: column; align-items: flex-start; }
+      .hero-stats { margin-left: 0; }
+      .article-item { grid-template-columns: 1fr; gap: 4px; }
+      .article-source { width: fit-content; }
+      .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="site-title">최준용 <span>Archive</span></div>
+    <nav>
+      <a href="#" class="active">홈</a>
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div>
+    <div class="hero-badge">BASEBALL</div>
+    <div style="height:8px"></div>
+    <div class="hero-name">최준용</div>
+    <div class="hero-sub">소속팀 · 포지션 · #등번호</div>  <!-- ✏️ 수정하세요 -->
+  </div>
+  <div class="hero-stats">
+    <div class="stat-item">
+      <label>기사</label>
+      <span id="article-count">0</span>
+    </div>
+    <div class="stat-item">
+      <label>영상</label>
+      <span id="video-count">0</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('articles', this)">📰 기사</button>
+    <button class="tab-btn" onclick="switchTab('videos', this)">🎥 영상</button>
+    <button class="tab-btn" onclick="switchTab('gallery', this)">🖼️ 갤러리</button>
+  </div>
+
+  <!-- ── 기사 탭 ── -->
+  <div id="tab-articles" class="tab-section active">
+    <div class="article-list" id="article-list">
+      <!-- 예시 항목 — 아래 형식으로 복사해서 추가하세요 -->
+      <a class="article-item" href="https://예시링크.com" target="_blank">
+        <span class="article-date">2025-05-01</span>
+        <span class="article-title">예시) 최준용, 시즌 첫 선발 등판 호투</span>
+        <span class="article-source">스포츠조선</span>
+      </a>
+    </div>
+    <div class="section-add-hint">
+      // 기사 추가: article-list 안에 &lt;a class="article-item"&gt; 블록을 복사해 붙여넣으세요
+    </div>
+  </div>
+
+  <!-- ── 영상 탭 ── -->
+  <div id="tab-videos" class="tab-section">
+    <div class="video-grid" id="video-grid">
+      <!-- 예시 카드 — youtube embed URL만 바꾸면 됩니다 -->
+      <div class="video-card">
+        <div class="video-thumb">
+          <!-- src의 VIDEO_ID 부분을 유튜브 영상 ID로 교체 -->
+          <!-- <iframe src="https://www.youtube.com/embed/VIDEO_ID" allowfullscreen></iframe> -->
+          <div class="placeholder">유튜브 ID를 입력하세요</div>
+        </div>
+        <div class="video-info">
+          <h3>예시) 최준용 인터뷰 — 시즌 소감</h3>
+          <div class="video-meta">2025-05-01 · 채널명</div>
+        </div>
+      </div>
+    </div>
+    <div class="section-add-hint" style="margin-top:16px">
+      // 영상 추가: video-grid 안에 video-card 블록 복사 후 YouTube embed ID 교체
+    </div>
+  </div>
+
+  <!-- ── 갤러리 탭 ── -->
+  <div id="tab-gallery" class="tab-section">
+    <div class="gallery-note">
+      💡 <strong>갤러리 사용법</strong>: 기존에 쓰시던
+      <a href="https://mirr1308.github.io/utils/autogallery/" target="_blank" style="color:var(--accent)">autogallery 도구</a>에서
+      HTML 코드를 생성한 뒤, 아래 gallery-grid 안에 &lt;img&gt; 태그를 붙여넣으시면 됩니다.
+    </div>
+    <div class="gallery-grid" id="gallery-grid">
+      <!-- 예시 셀 — img 태그로 교체하거나 autogallery 결과물 붙여넣기 -->
+      <div class="gallery-cell">사진 1</div>
+      <div class="gallery-cell">사진 2</div>
+      <div class="gallery-cell">사진 3</div>
+    </div>
+    <div class="section-add-hint" style="margin-top:12px">
+      // autogallery에서 생성한 &lt;img src="..."&gt; 태그를 gallery-grid 안에 붙여넣으세요
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  최준용 아카이브 · 팬 제작 비공식 사이트
+</footer>
+
+<script>
+  // 탭 전환
+  function switchTab(name, btn) {
+    document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  // 카운트 자동 집계
+  window.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('article-count').textContent =
+      document.querySelectorAll('#article-list .article-item').length;
+    document.getElementById('video-count').textContent =
+      document.querySelectorAll('#video-grid .video-card').length;
+  });
+</script>
+
+</body>
+</html>
