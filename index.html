@@ -65,11 +65,18 @@
     .empty-state { padding: 40px; text-align: center; font-size: 13px; color: var(--text-sub); font-family: var(--mono); border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); }
 
     /* VIDEO GRID */
-    .video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
-    .video-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; transition: box-shadow 0.15s; }
-    .video-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
-    .video-thumb { position: relative; width: 100%; padding-top: 56.25%; background: #111; }
-    .video-thumb iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: none; }
+    .video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+    .video-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; transition: box-shadow 0.15s; text-decoration: none; color: inherit; display: block; }
+    .video-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
+    .video-thumb { position: relative; width: 100%; padding-top: 56.25%; background: #111; overflow: hidden; }
+    .video-thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 0.2s; }
+    .video-card:hover .video-thumb img { transform: scale(1.03); }
+    .video-play {
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.15); transition: background 0.2s;
+    }
+    .video-card:hover .video-play { background: rgba(0,0,0,0.3); }
+    .video-play svg { width: 44px; height: 44px; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4)); }
     .video-info { padding: 12px 14px; }
     .video-info h3 { font-size: 13px; font-weight: 500; line-height: 1.4; margin-bottom: 6px; }
     .video-meta { font-size: 11px; color: var(--text-sub); font-family: var(--mono); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
@@ -172,6 +179,10 @@
 
 <footer>
   <a href="https://spin-spin.com/monapi_lotte" target="_blank">monapi_lotte</a>
+  <span style="margin: 0 10px; opacity: 0.3">|</span>
+  <a href="https://x.com/monapi_lotte" target="_blank">𝕏 Twitter</a>
+  <span style="margin: 0 10px; opacity: 0.3">|</span>
+  <a href="https://www.instagram.com/monapi_lotte/" target="_blank">Instagram</a>
 </footer>
 
 <script>
@@ -243,9 +254,15 @@
     document.getElementById('video-count-label').textContent = `${filtered.length}건 / 전체 ${DATA.videos.length}건`;
     if (!filtered.length) { document.getElementById('video-grid').innerHTML = '<div class="empty-state">검색 결과가 없습니다.</div>'; return; }
     document.getElementById('video-grid').innerHTML = filtered.map(v => `
-      <div class="video-card">
+      <a class="video-card" href="https://www.youtube.com/watch?v=${v.videoId}" target="_blank">
         <div class="video-thumb">
-          <iframe src="https://www.youtube.com/embed/${v.videoId}" allowfullscreen loading="lazy"></iframe>
+          <img src="https://img.youtube.com/vi/${v.videoId}/mqdefault.jpg" alt="${v.title}" loading="lazy" />
+          <div class="video-play">
+            <svg viewBox="0 0 68 48" xmlns="http://www.w3.org/2000/svg">
+              <rect width="68" height="48" rx="10" fill="#ff0000" opacity="0.85"/>
+              <polygon points="26,14 26,34 48,24" fill="#fff"/>
+            </svg>
+          </div>
         </div>
         <div class="video-info">
           <h3>${v.title}</h3>
@@ -254,7 +271,7 @@
             ${(v.tags||[]).map(t=>`<span class="item-tag">${t}</span>`).join('')}
           </div>
         </div>
-      </div>`).join('');
+      </a>`).join('');
   }
 
   function renderGallery() {
