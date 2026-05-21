@@ -1,0 +1,41 @@
+{
+  "articles": [
+    {
+      "date": "2025-05-21",
+      "title": "예시) 최준용, 시즌 첫 선발 등판 호투 5이닝 1실점",
+      "url": "https://example.com/article1",
+      "source": "스포츠조선",
+      "tags": ["경기"]
+    },
+    {
+      "date": "2025-05-18",
+      "title": "예시) 최준용 인터뷰 \"올 시즌 목표는 두 자릿수 승리\"",
+      "url": "https://example.com/article2",
+      "source": "MK스포츠",
+      "tags": ["인터뷰"]
+    },
+    {
+      "date": "2025-05-10",
+      "title": "예시) 최준용, 스프링캠프 첫날부터 눈에 띄는 구위",
+      "url": "https://example.com/article3",
+      "source": "SPOTV NEWS",
+      "tags": ["훈련"]
+    }
+  ],
+  "videos": [
+    {
+      "date": "2025-05-19",
+      "title": "예시) 최준용 직접 인터뷰 - 시즌 목표와 각오",
+      "videoId": "dQw4w9WgXcQ",
+      "channel": "KBO 공식",
+      "tags": ["인터뷰"]
+    },
+    {
+      "date": "2025-05-12",
+      "title": "예시) 최준용 하이라이트 모음 2025",
+      "videoId": "dQw4w9WgXcQ",
+      "channel": "야구채널",
+      "tags": ["경기"]
+    }
+  ]
+}

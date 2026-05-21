@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>뇽카이브</title>
+  <title>최준용 아카이브</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <style>
@@ -22,296 +22,155 @@
       --radius: 6px;
     }
 
-    body {
-      font-family: var(--sans);
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-    }
+    body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; }
 
-    /* ── HEADER ── */
+    /* HEADER */
     header {
       background: var(--surface);
       border-bottom: 1px solid var(--border);
       padding: 0 24px;
-      position: sticky;
-      top: 0;
-      z-index: 100;
+      position: sticky; top: 0; z-index: 100;
     }
     .header-inner {
-      max-width: 960px;
-      margin: 0 auto;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 56px;
+      max-width: 960px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between; height: 56px;
     }
-    .site-title {
-      font-size: 15px;
-      font-weight: 700;
-      letter-spacing: -0.3px;
-    }
-    .site-title span {
-      color: var(--accent);
-    }
-    nav {
-      display: flex;
-      gap: 4px;
-    }
-    nav a {
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text-sub);
-      text-decoration: none;
-      padding: 6px 12px;
-      border-radius: var(--radius);
-      transition: background 0.15s, color 0.15s;
-    }
-    nav a:hover, nav a.active {
-      background: var(--accent-light);
-      color: var(--accent);
-    }
+    .site-title { font-size: 15px; font-weight: 700; letter-spacing: -0.3px; }
+    .site-title span { color: var(--accent); }
 
-    /* ── HERO ── */
+    /* HERO */
     .hero {
-      max-width: 960px;
-      margin: 0 auto;
-      padding: 40px 24px 28px;
-      display: flex;
-      align-items: flex-end;
-      gap: 20px;
+      max-width: 960px; margin: 0 auto;
+      padding: 36px 24px 24px;
+      display: flex; align-items: flex-end; gap: 20px;
       border-bottom: 1px solid var(--border);
     }
     .hero-badge {
-      font-family: var(--mono);
-      font-size: 11px;
-      background: var(--accent);
-      color: #fff;
-      padding: 3px 8px;
-      border-radius: 3px;
-      letter-spacing: 0.5px;
+      font-family: var(--mono); font-size: 11px;
+      background: var(--accent); color: #fff;
+      padding: 3px 8px; border-radius: 3px; letter-spacing: 0.5px;
     }
-    .hero-name {
-      font-size: 36px;
-      font-weight: 700;
-      letter-spacing: -1px;
-      line-height: 1;
-    }
-    .hero-sub {
-      font-size: 13px;
-      color: var(--text-sub);
-      margin-top: 6px;
-    }
-    .hero-stats {
-      margin-left: auto;
-      display: flex;
-      gap: 24px;
-      text-align: center;
-    }
-    .stat-item label {
-      display: block;
-      font-size: 11px;
-      color: var(--text-sub);
-      font-family: var(--mono);
-      margin-bottom: 2px;
-    }
-    .stat-item span {
-      font-size: 18px;
-      font-weight: 700;
-      color: var(--accent);
-    }
+    .hero-name { font-size: 36px; font-weight: 700; letter-spacing: -1px; line-height: 1; }
+    .hero-sub { font-size: 13px; color: var(--text-sub); margin-top: 6px; }
+    .hero-stats { margin-left: auto; display: flex; gap: 24px; text-align: center; }
+    .stat-item label { display: block; font-size: 11px; color: var(--text-sub); font-family: var(--mono); margin-bottom: 2px; }
+    .stat-item span { font-size: 22px; font-weight: 700; color: var(--accent); }
 
-    /* ── MAIN LAYOUT ── */
-    .container {
-      max-width: 960px;
-      margin: 0 auto;
-      padding: 32px 24px;
-    }
+    /* CONTAINER */
+    .container { max-width: 960px; margin: 0 auto; padding: 28px 24px; }
 
-    /* ── TABS ── */
-    .tabs {
-      display: flex;
-      gap: 0;
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 28px;
-    }
+    /* TABS */
+    .tabs { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
     .tab-btn {
-      font-family: var(--sans);
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text-sub);
-      background: none;
-      border: none;
+      font-family: var(--sans); font-size: 13px; font-weight: 500;
+      color: var(--text-sub); background: none; border: none;
       border-bottom: 2px solid transparent;
-      padding: 10px 16px;
-      cursor: pointer;
-      transition: color 0.15s, border-color 0.15s;
-      margin-bottom: -1px;
+      padding: 10px 16px; cursor: pointer;
+      transition: color 0.15s, border-color 0.15s; margin-bottom: -1px;
     }
     .tab-btn:hover { color: var(--text); }
-    .tab-btn.active {
-      color: var(--accent);
-      border-bottom-color: var(--accent);
-    }
-
-    /* ── SECTION CONTENT ── */
+    .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
     .tab-section { display: none; }
     .tab-section.active { display: block; }
 
-    /* ── ARTICLES ── */
-    .article-list {
-      display: flex;
-      flex-direction: column;
-      gap: 1px;
-      background: var(--border);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
+    /* SEARCH + FILTER BAR */
+    .toolbar {
+      display: flex; gap: 10px; align-items: center;
+      margin-bottom: 16px; flex-wrap: wrap;
     }
+    .search-box {
+      flex: 1; min-width: 180px;
+      font-family: var(--sans); font-size: 13px;
+      border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 8px 12px; background: var(--surface);
+      outline: none; transition: border-color 0.15s;
+    }
+    .search-box:focus { border-color: var(--accent); }
+    .tag-filters { display: flex; gap: 6px; flex-wrap: wrap; }
+    .tag-btn {
+      font-family: var(--mono); font-size: 11px;
+      border: 1px solid var(--border); border-radius: 20px;
+      padding: 4px 10px; background: var(--surface);
+      cursor: pointer; color: var(--text-sub);
+      transition: all 0.15s;
+    }
+    .tag-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .tag-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+    /* ARTICLE LIST */
+    .article-list { display: flex; flex-direction: column; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
     .article-item {
       background: var(--surface);
-      display: grid;
-      grid-template-columns: 90px 1fr auto;
-      align-items: center;
-      gap: 16px;
-      padding: 14px 16px;
-      text-decoration: none;
-      color: inherit;
-      transition: background 0.1s;
+      display: grid; grid-template-columns: 96px 1fr auto;
+      align-items: center; gap: 16px; padding: 14px 16px;
+      text-decoration: none; color: inherit; transition: background 0.1s;
     }
     .article-item:hover { background: #fafafa; }
-    .article-date {
-      font-family: var(--mono);
-      font-size: 11px;
-      color: var(--text-sub);
-    }
-    .article-title {
-      font-size: 14px;
-      font-weight: 500;
-      line-height: 1.4;
-    }
+    .article-date { font-family: var(--mono); font-size: 11px; color: var(--text-sub); }
+    .article-title { font-size: 14px; font-weight: 500; line-height: 1.4; }
+    .article-right { display: flex; align-items: center; gap: 8px; }
     .article-source {
-      font-size: 11px;
-      color: var(--text-sub);
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 3px;
-      padding: 2px 7px;
-      white-space: nowrap;
+      font-size: 11px; color: var(--text-sub);
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 3px; padding: 2px 7px; white-space: nowrap;
     }
-    .section-add-hint {
-      margin-top: 16px;
-      font-size: 12px;
-      color: var(--text-sub);
-      font-family: var(--mono);
-      padding: 10px 14px;
-      border: 1px dashed var(--border);
-      border-radius: var(--radius);
+    .item-tag {
+      font-size: 10px; font-family: var(--mono);
+      border-radius: 3px; padding: 2px 6px;
+      background: var(--accent-light); color: var(--accent);
     }
 
-    /* ── VIDEOS ── */
-    .video-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 16px;
-    }
-    .video-card {
+    /* EMPTY STATE */
+    .empty-state {
+      padding: 40px; text-align: center;
+      font-size: 13px; color: var(--text-sub); font-family: var(--mono);
+      border: 1px solid var(--border); border-radius: var(--radius);
       background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-      transition: box-shadow 0.15s;
     }
+
+    /* VIDEO GRID */
+    .video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+    .video-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; transition: box-shadow 0.15s; }
     .video-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
-    .video-thumb {
-      position: relative;
-      width: 100%;
-      padding-top: 56.25%;
-      background: #111;
-    }
-    .video-thumb iframe {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-    .video-thumb .placeholder {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #555;
-      font-size: 12px;
-      font-family: var(--mono);
-    }
-    .video-info {
-      padding: 12px 14px;
-    }
-    .video-info h3 {
-      font-size: 13px;
-      font-weight: 500;
-      line-height: 1.4;
-      margin-bottom: 4px;
-    }
-    .video-meta {
-      font-size: 11px;
-      color: var(--text-sub);
-      font-family: var(--mono);
-    }
+    .video-thumb { position: relative; width: 100%; padding-top: 56.25%; background: #111; }
+    .video-thumb iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: none; }
+    .video-info { padding: 12px 14px; }
+    .video-info h3 { font-size: 13px; font-weight: 500; line-height: 1.4; margin-bottom: 6px; }
+    .video-meta { font-size: 11px; color: var(--text-sub); font-family: var(--mono); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 
-    /* ── GALLERY ── */
+    /* GALLERY */
     .gallery-note {
-      background: var(--accent-light);
-      border: 1px solid #c5d4ee;
-      border-radius: var(--radius);
-      padding: 14px 16px;
-      font-size: 13px;
-      color: var(--accent);
-      margin-bottom: 20px;
-      line-height: 1.6;
+      background: var(--accent-light); border: 1px solid #c5d4ee;
+      border-radius: var(--radius); padding: 14px 16px;
+      font-size: 13px; color: var(--accent); margin-bottom: 20px; line-height: 1.6;
     }
-    .gallery-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-    }
+    .gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
     .gallery-cell {
-      aspect-ratio: 1;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: var(--mono);
-      font-size: 11px;
-      color: var(--text-sub);
+      aspect-ratio: 1; background: var(--surface);
+      border: 1px solid var(--border); border-radius: var(--radius);
+      overflow: hidden; display: flex; align-items: center; justify-content: center;
+      font-family: var(--mono); font-size: 11px; color: var(--text-sub);
     }
-    .gallery-cell img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+    .gallery-cell img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* RESULT COUNT */
+    .result-count {
+      font-family: var(--mono); font-size: 11px; color: var(--text-sub);
+      margin-bottom: 10px;
     }
 
-    /* ── FOOTER ── */
+    /* FOOTER */
     footer {
-      border-top: 1px solid var(--border);
-      margin-top: 60px;
-      padding: 20px 24px;
-      text-align: center;
-      font-family: var(--mono);
-      font-size: 11px;
-      color: var(--text-sub);
+      border-top: 1px solid var(--border); margin-top: 60px;
+      padding: 20px 24px; text-align: center;
+      font-family: var(--mono); font-size: 11px; color: var(--text-sub);
     }
 
     @media (max-width: 600px) {
       .hero { flex-direction: column; align-items: flex-start; }
       .hero-stats { margin-left: 0; }
       .article-item { grid-template-columns: 1fr; gap: 4px; }
-      .article-source { width: fit-content; }
+      .article-right { justify-content: flex-start; }
       .gallery-grid { grid-template-columns: repeat(2, 1fr); }
     }
   </style>
@@ -321,28 +180,19 @@
 <header>
   <div class="header-inner">
     <div class="site-title">최준용 <span>Archive</span></div>
-    <nav>
-      <a href="#" class="active">홈</a>
-    </nav>
   </div>
 </header>
 
 <div class="hero">
   <div>
-    <div class="hero-badge">Lotte Giants</div>
+    <div class="hero-badge">BASEBALL</div>
     <div style="height:8px"></div>
     <div class="hero-name">최준용</div>
-    <div class="hero-sub">투수 · #56</div>  <!-- ✏️ 수정하세요 -->
+    <div class="hero-sub">소속팀 · 포지션 · #등번호</div> <!-- ✏️ 수정하세요 -->
   </div>
   <div class="hero-stats">
-    <div class="stat-item">
-      <label>기사</label>
-      <span id="article-count">0</span>
-    </div>
-    <div class="stat-item">
-      <label>영상</label>
-      <span id="video-count">0</span>
-    </div>
+    <div class="stat-item"><label>기사</label><span id="stat-articles">-</span></div>
+    <div class="stat-item"><label>영상</label><span id="stat-videos">-</span></div>
   </div>
 </div>
 
@@ -354,68 +204,178 @@
     <button class="tab-btn" onclick="switchTab('gallery', this)">🖼️ 갤러리</button>
   </div>
 
-  <!-- ── 기사 탭 ── -->
+  <!-- 기사 탭 -->
   <div id="tab-articles" class="tab-section active">
-    <div class="article-list" id="article-list">
-      <!-- 예시 항목 — 아래 형식으로 복사해서 추가하세요 -->
-      <a class="article-item" href="https://예시링크.com" target="_blank">
-        <span class="article-date">2025-05-01</span>
-        <span class="article-title">예시) 최준용, 시즌 첫 선발 등판 호투</span>
-        <span class="article-source">스포츠조선</span>
-      </a>
+    <div class="toolbar">
+      <input class="search-box" type="text" id="article-search" placeholder="기사 제목 검색..." oninput="renderArticles()" />
+      <div class="tag-filters" id="article-tags"></div>
     </div>
-    <div class="section-add-hint">
-      // 기사 추가: article-list 안에 &lt;a class="article-item"&gt; 블록을 복사해 붙여넣으세요
-    </div>
+    <div class="result-count" id="article-count-label"></div>
+    <div id="article-list"></div>
   </div>
 
-  <!-- ── 영상 탭 ── -->
+  <!-- 영상 탭 -->
   <div id="tab-videos" class="tab-section">
-    <div class="video-grid" id="video-grid">
-      <!-- 예시 카드 — youtube embed URL만 바꾸면 됩니다 -->
-      <div class="video-card">
-        <div class="video-thumb">
-          <!-- src의 VIDEO_ID 부분을 유튜브 영상 ID로 교체 -->
-          <!-- <iframe src="https://www.youtube.com/embed/VIDEO_ID" allowfullscreen></iframe> -->
-          <div class="placeholder">유튜브 ID를 입력하세요</div>
-        </div>
-        <div class="video-info">
-          <h3>예시) 최준용 인터뷰 — 시즌 소감</h3>
-          <div class="video-meta">2025-05-01 · 채널명</div>
-        </div>
-      </div>
+    <div class="toolbar">
+      <input class="search-box" type="text" id="video-search" placeholder="영상 제목 검색..." oninput="renderVideos()" />
+      <div class="tag-filters" id="video-tags"></div>
     </div>
-    <div class="section-add-hint" style="margin-top:16px">
-      // 영상 추가: video-grid 안에 video-card 블록 복사 후 YouTube embed ID 교체
-    </div>
+    <div class="result-count" id="video-count-label"></div>
+    <div id="video-grid" class="video-grid"></div>
   </div>
 
-  <!-- ── 갤러리 탭 ── -->
+  <!-- 갤러리 탭 -->
   <div id="tab-gallery" class="tab-section">
     <div class="gallery-note">
-      💡 <strong>갤러리 사용법</strong>: 기존에 쓰시던
+      💡 <strong>갤러리 사용법</strong>:
       <a href="https://mirr1308.github.io/utils/autogallery/" target="_blank" style="color:var(--accent)">autogallery 도구</a>에서
-      HTML 코드를 생성한 뒤, 아래 gallery-grid 안에 &lt;img&gt; 태그를 붙여넣으시면 됩니다.
+      HTML 코드 생성 후 아래 gallery-grid 안에 <code>&lt;img&gt;</code> 태그를 붙여넣으세요.
     </div>
     <div class="gallery-grid" id="gallery-grid">
-      <!-- 예시 셀 — img 태그로 교체하거나 autogallery 결과물 붙여넣기 -->
+      <!-- autogallery에서 생성한 img 태그를 여기에 붙여넣기 -->
       <div class="gallery-cell">사진 1</div>
       <div class="gallery-cell">사진 2</div>
       <div class="gallery-cell">사진 3</div>
-    </div>
-    <div class="section-add-hint" style="margin-top:12px">
-      // autogallery에서 생성한 &lt;img src="..."&gt; 태그를 gallery-grid 안에 붙여넣으세요
     </div>
   </div>
 
 </div>
 
-<footer>
-  @monapi_lotte
-</footer>
+<footer>최준용 아카이브 · 팬 제작 비공식 사이트</footer>
 
 <script>
-  // 탭 전환
+  let DATA = { articles: [], videos: [] };
+  let activeArticleTag = 'all';
+  let activeVideoTag = 'all';
+
+  // ── 데이터 로드 ──
+  async function loadData() {
+    try {
+      const res = await fetch('data.json?t=' + Date.now()); // 캐시 방지
+      DATA = await res.json();
+    } catch(e) {
+      // 로컬 테스트 fallback: 샘플 데이터
+      DATA = {
+        articles: [
+          { date: "2025-05-21", title: "예시) 최준용, 시즌 첫 선발 등판 호투 5이닝 1실점", url: "#", source: "스포츠조선", tags: ["경기"] },
+          { date: "2025-05-18", title: "예시) 최준용 인터뷰 \"올 시즌 목표는 두 자릿수 승리\"", url: "#", source: "MK스포츠", tags: ["인터뷰"] }
+        ],
+        videos: [
+          { date: "2025-05-19", title: "예시) 최준용 직접 인터뷰 - 시즌 목표와 각오", videoId: "dQw4w9WgXcQ", channel: "KBO 공식", tags: ["인터뷰"] }
+        ]
+      };
+    }
+
+    // 날짜 최신순 정렬
+    DATA.articles.sort((a, b) => b.date.localeCompare(a.date));
+    DATA.videos.sort((a, b) => b.date.localeCompare(a.date));
+
+    // 통계
+    document.getElementById('stat-articles').textContent = DATA.articles.length;
+    document.getElementById('stat-videos').textContent = DATA.videos.length;
+
+    buildTagFilters();
+    renderArticles();
+    renderVideos();
+  }
+
+  // ── 태그 필터 버튼 생성 ──
+  function buildTagFilters() {
+    const aTags = ['all', ...new Set(DATA.articles.flatMap(a => a.tags || []))];
+    const vTags = ['all', ...new Set(DATA.videos.flatMap(v => v.tags || []))];
+
+    document.getElementById('article-tags').innerHTML = aTags.map(t =>
+      `<button class="tag-btn ${t === 'all' ? 'active' : ''}" onclick="setArticleTag('${t}', this)">${t === 'all' ? '전체' : t}</button>`
+    ).join('');
+
+    document.getElementById('video-tags').innerHTML = vTags.map(t =>
+      `<button class="tag-btn ${t === 'all' ? 'active' : ''}" onclick="setVideoTag('${t}', this)">${t === 'all' ? '전체' : t}</button>`
+    ).join('');
+  }
+
+  function setArticleTag(tag, btn) {
+    activeArticleTag = tag;
+    document.querySelectorAll('#article-tags .tag-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderArticles();
+  }
+  function setVideoTag(tag, btn) {
+    activeVideoTag = tag;
+    document.querySelectorAll('#video-tags .tag-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderVideos();
+  }
+
+  // ── 기사 렌더 ──
+  function renderArticles() {
+    const q = document.getElementById('article-search').value.toLowerCase();
+    const filtered = DATA.articles.filter(a => {
+      const matchTag = activeArticleTag === 'all' || (a.tags || []).includes(activeArticleTag);
+      const matchQ = !q || a.title.toLowerCase().includes(q) || a.source.toLowerCase().includes(q);
+      return matchTag && matchQ;
+    });
+
+    document.getElementById('article-count-label').textContent =
+      `${filtered.length}건 / 전체 ${DATA.articles.length}건`;
+
+    if (filtered.length === 0) {
+      document.getElementById('article-list').innerHTML =
+        '<div class="empty-state">검색 결과가 없습니다.</div>';
+      return;
+    }
+
+    document.getElementById('article-list').innerHTML =
+      '<div class="article-list">' +
+      filtered.map(a => `
+        <a class="article-item" href="${a.url}" target="_blank">
+          <span class="article-date">${a.date}</span>
+          <span class="article-title">${a.title}</span>
+          <span class="article-right">
+            ${(a.tags||[]).map(t => `<span class="item-tag">${t}</span>`).join('')}
+            <span class="article-source">${a.source}</span>
+          </span>
+        </a>
+      `).join('') +
+      '</div>';
+  }
+
+  // ── 영상 렌더 ──
+  function renderVideos() {
+    const q = document.getElementById('video-search').value.toLowerCase();
+    const filtered = DATA.videos.filter(v => {
+      const matchTag = activeVideoTag === 'all' || (v.tags || []).includes(activeVideoTag);
+      const matchQ = !q || v.title.toLowerCase().includes(q) || v.channel.toLowerCase().includes(q);
+      return matchTag && matchQ;
+    });
+
+    document.getElementById('video-count-label').textContent =
+      `${filtered.length}건 / 전체 ${DATA.videos.length}건`;
+
+    if (filtered.length === 0) {
+      document.getElementById('video-grid').innerHTML =
+        '<div class="empty-state">검색 결과가 없습니다.</div>';
+      return;
+    }
+
+    document.getElementById('video-grid').innerHTML = filtered.map(v => `
+      <div class="video-card">
+        <div class="video-thumb">
+          <iframe src="https://www.youtube.com/embed/${v.videoId}" allowfullscreen loading="lazy"></iframe>
+        </div>
+        <div class="video-info">
+          <h3>${v.title}</h3>
+          <div class="video-meta">
+            <span>${v.date}</span>
+            <span>·</span>
+            <span>${v.channel}</span>
+            ${(v.tags||[]).map(t => `<span class="item-tag">${t}</span>`).join('')}
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // ── 탭 전환 ──
   function switchTab(name, btn) {
     document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -423,14 +383,7 @@
     btn.classList.add('active');
   }
 
-  // 카운트 자동 집계
-  window.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('article-count').textContent =
-      document.querySelectorAll('#article-list .article-item').length;
-    document.getElementById('video-count').textContent =
-      document.querySelectorAll('#video-grid .video-card').length;
-  });
+  loadData();
 </script>
-
 </body>
 </html>
