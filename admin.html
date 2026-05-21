@@ -392,6 +392,10 @@
         <label>영상 제목</label>
         <input type="text" id="v-title" placeholder="영상 제목" />
       </div>
+      <div class="form-field">
+        <label>시작 시간 <span style="color:var(--sub);font-weight:400">(선택 · 초 단위 자동입력)</span></label>
+        <input type="number" id="v-start" placeholder="예) 516 = 8분36초 / 비워두면 처음부터" min="0" style="max-width:220px" />
+      </div>
       <button class="btn-submit" id="v-submit" onclick="submitVideo()">
         <span>영상 저장</span>
       </button>
@@ -612,6 +616,14 @@
     document.getElementById('v-iframe').src = `https://www.youtube.com/embed/${id}`;
     preview.style.display = 'block';
 
+    // 시작 시간 자동 추출 (t= 파라미터)
+    const tMatch = url.match(/[?&]t=(\d+)/);
+    if (tMatch) {
+      document.getElementById('v-start').value = tMatch[1];
+    } else {
+      document.getElementById('v-start').value = '';
+    }
+
     // 중복 체크
     const dup = DATA.videos.find(v => v.videoId === id);
     if (dup) {
@@ -680,17 +692,21 @@
     const title   = document.getElementById('v-title').value.trim();
     const tag     = document.getElementById('v-tag').value;
     const isShorts = document.getElementById('v-is-shorts').checked;
+    const start   = parseInt(document.getElementById('v-start').value) || 0;
     if (!videoId) { showToast('유효한 유튜브 URL을 입력해 주세요', 'red'); return; }
     if (!date||!title) { showToast('날짜와 제목은 필수예요', 'red'); return; }
     const btn = document.getElementById('v-submit');
     btn.disabled = true; btn.querySelector('span').textContent = '저장 중...';
     const tags = isShorts ? [tag, '쇼츠'] : [tag];
-    DATA.videos.unshift({ date, title, videoId, channel, tags });
+    const entry = { date, title, videoId, channel, tags };
+    if (start) entry.start = start;
+    DATA.videos.unshift(entry);
     DATA.videos.sort((a,b) => b.date.localeCompare(a.date));
     try {
       await saveDataToGitHub();
       showToast('✅ 영상 저장 완료!', 'green');
       ['v-url','v-channel','v-title'].forEach(id => document.getElementById(id).value='');
+      document.getElementById('v-start').value = '';
       document.getElementById('v-is-shorts').checked = false;
       document.getElementById('v-id-badge').style.display='none';
       document.getElementById('v-preview').style.display='none';
@@ -771,6 +787,7 @@
         <div class="form-field"><label>채널명</label><input id="m-channel" type="text" value="${esc(item.channel)}" /></div>
         <div class="form-field"><label>영상 제목</label><input id="m-title" type="text" value="${esc(item.title)}" /></div>
         <div class="form-field"><label>YouTube ID</label><input id="m-videoid" type="text" value="${esc(item.videoId)}" /></div>
+        <div class="form-field"><label>시작 시간 <span style="color:var(--sub);font-weight:400">(초)</span></label><input id="m-start" type="number" min="0" value="${item.start||''}" placeholder="비워두면 처음부터" style="max-width:180px" /></div>
         <div class="form-row">
           <div class="form-field"><label>태그</label><select id="m-tag">${TAG_OPTIONS.videos.map(t=>`<option ${mainTag===t?'selected':''}>${t}</option>`).join('')}</select></div>
           <div class="form-field" style="flex:0;min-width:auto">
@@ -807,13 +824,16 @@
     } else if (type === 'videos') {
       const isShorts = document.getElementById('m-is-shorts').checked;
       const tag = document.getElementById('m-tag').value;
-      DATA[type][idx] = {
+      const start = parseInt(document.getElementById('m-start').value) || 0;
+      const entry = {
         date:    document.getElementById('m-date').value,
         channel: document.getElementById('m-channel').value.trim(),
         title:   document.getElementById('m-title').value.trim(),
         videoId: document.getElementById('m-videoid').value.trim(),
         tags:    isShorts ? [tag, '쇼츠'] : [tag]
       };
+      if (start) entry.start = start;
+      DATA[type][idx] = entry;
     } else {
       DATA[type][idx] = document.getElementById('m-url').value.trim();
     }

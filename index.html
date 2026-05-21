@@ -305,7 +305,7 @@
     document.getElementById('video-count-label').textContent = `${filtered.length}건 / 전체 ${DATA.videos.length}건`;
     if (!filtered.length) { document.getElementById('video-grid').innerHTML = '<div class="empty-state">검색 결과가 없습니다.</div>'; return; }
     document.getElementById('video-grid').innerHTML = filtered.map(v => `
-      <a class="video-card" href="https://www.youtube.com/watch?v=${v.videoId}" target="_blank">
+      <a class="video-card" href="https://www.youtube.com/watch?v=${v.videoId}${v.start ? '&t=' + v.start : ''}" target="_blank">
         <div class="video-thumb">
           <img src="https://img.youtube.com/vi/${v.videoId}/hqdefault.jpg" alt="${v.title}" loading="lazy" />
         </div>
