@@ -189,7 +189,47 @@
       flex-shrink: 0; transition: background 0.1s;
     }
     .btn-delete:hover { background: #fce0da; }
+    .btn-edit {
+      font-family: var(--mono); font-size: 10px; color: var(--accent);
+      background: var(--accent-light); border: 1px solid #c5d4ee;
+      border-radius: 3px; padding: 3px 7px; cursor: pointer;
+      flex-shrink: 0; transition: background 0.1s;
+    }
+    .btn-edit:hover { background: #d4e3f5; }
+    .list-actions { display: flex; flex-direction: column; gap: 4px; }
     .list-empty { font-family: var(--mono); font-size: 12px; color: var(--sub); padding: 20px 0; text-align: center; }
+
+    /* ── 수정 모달 ── */
+    .modal-backdrop {
+      display: none; position: fixed; inset: 0; z-index: 200;
+      background: rgba(0,0,0,0.45); align-items: center; justify-content: center;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal {
+      background: var(--surface); border-radius: var(--r);
+      padding: 28px; width: 100%; max-width: 460px; margin: 0 16px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+    }
+    .modal h3 { font-size: 15px; margin-bottom: 18px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+    .modal-actions { display: flex; gap: 8px; margin-top: 16px; }
+    .btn-cancel {
+      flex: 1; font-family: var(--sans); font-size: 13px;
+      background: var(--bg); color: var(--text); border: 1px solid var(--border);
+      border-radius: var(--r); padding: 10px; cursor: pointer;
+    }
+    .btn-save {
+      flex: 2; font-family: var(--sans); font-size: 13px; font-weight: 500;
+      background: var(--accent); color: #fff; border: none;
+      border-radius: var(--r); padding: 10px; cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .btn-save:hover { opacity: 0.88; }
+    .yt-autofill {
+      font-family: var(--mono); font-size: 11px; color: var(--sub);
+      margin-top: 4px; min-height: 16px;
+    }
+    .yt-autofill.loading { color: var(--accent); }
+    .yt-autofill.done { color: var(--green); }
 
     /* ── TOAST ── */
     .toast {
@@ -318,6 +358,7 @@
       <div class="form-field">
         <label>유튜브 URL</label>
         <input type="url" id="v-url" placeholder="https://www.youtube.com/watch?v=..." oninput="handleVideoUrl()" />
+        <div class="yt-autofill" id="v-autofill"></div>
       </div>
       <div class="yt-id-badge" id="v-id-badge"></div>
       <div class="yt-preview" id="v-preview">
@@ -385,6 +426,18 @@
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- ── 수정 모달 ── -->
+<div class="modal-backdrop" id="modal-backdrop" onclick="closeModal(event)">
+  <div class="modal">
+    <h3 id="modal-title">항목 수정</h3>
+    <div id="modal-body"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModalDirect()">취소</button>
+      <button class="btn-save" onclick="saveEdit()">저장</button>
+    </div>
+  </div>
+</div>
 
 <script>
   // ─────────────────────────────────────────────
@@ -498,7 +551,10 @@
             <a href="${a.url}" target="_blank" style="color:inherit;text-decoration:none">${a.title}</a>
           </div>
         </div>
-        <button class="btn-delete" onclick="deleteItem('articles',${i})">삭제</button>
+        <div class="list-actions">
+          <button class="btn-edit" onclick="openEditModal('articles',${i})">수정</button>
+          <button class="btn-delete" onclick="deleteItem('articles',${i})">삭제</button>
+        </div>
       </div>`).join('')
     : '<div class="list-empty">기사가 없습니다</div>';
   }
@@ -523,27 +579,60 @@
     btn.disabled = false; btn.querySelector('span').textContent = '기사 저장';
   }
 
-  // ── 영상 ──
   function extractVideoId(url) {
     const patterns=[/[?&]v=([^&#]+)/,/youtu\.be\/([^?&#]+)/,/shorts\/([^?&#]+)/,/embed\/([^?&#]+)/];
     for(const p of patterns){ const m=url.match(p); if(m) return m[1]; }
     return null;
   }
 
-  function handleVideoUrl() {
+  let autoFillTimer = null;
+  async function handleVideoUrl() {
     const url = document.getElementById('v-url').value.trim();
     const id  = extractVideoId(url);
-    const badge = document.getElementById('v-id-badge');
-    const preview = document.getElementById('v-preview');
-    if (id) {
-      badge.textContent = `✓ videoId: ${id}`;
-      badge.style.display = 'block';
-      document.getElementById('v-iframe').src = `https://www.youtube.com/embed/${id}`;
-      preview.style.display = 'block';
-    } else {
+    const badge    = document.getElementById('v-id-badge');
+    const preview  = document.getElementById('v-preview');
+    const autofill = document.getElementById('v-autofill');
+
+    if (!id) {
       badge.style.display = 'none';
       preview.style.display = 'none';
+      autofill.textContent = '';
+      return;
     }
+
+    badge.textContent = `✓ videoId: ${id}`;
+    badge.style.display = 'block';
+    document.getElementById('v-iframe').src = `https://www.youtube.com/embed/${id}`;
+    preview.style.display = 'block';
+
+    // 날짜 오늘로 자동설정
+    const today = new Date().toISOString().slice(0,10);
+    document.getElementById('v-date').value = today;
+
+    // noembed로 제목·채널 자동완성 (디바운스 300ms)
+    clearTimeout(autoFillTimer);
+    autofill.textContent = '정보 불러오는 중...';
+    autofill.className = 'yt-autofill loading';
+    autoFillTimer = setTimeout(async () => {
+      try {
+        const res = await fetch(`https://noembed.com/embed?url=https://www.youtube.com/watch?v=${id}`);
+        const info = await res.json();
+        if (info.title) {
+          const titleEl   = document.getElementById('v-title');
+          const channelEl = document.getElementById('v-channel');
+          if (!titleEl.value)   titleEl.value   = info.title;
+          if (!channelEl.value) channelEl.value = info.author_name || '';
+          autofill.textContent = '✓ 제목·채널 자동완성 (수정 가능)';
+          autofill.className = 'yt-autofill done';
+        } else {
+          autofill.textContent = '자동완성 실패 — 직접 입력해 주세요';
+          autofill.className = 'yt-autofill';
+        }
+      } catch {
+        autofill.textContent = '자동완성 실패 — 직접 입력해 주세요';
+        autofill.className = 'yt-autofill';
+      }
+    }, 300);
   }
 
   function renderVideoList() {
@@ -558,7 +647,10 @@
           </div>
           <div class="list-item-title">${v.title}</div>
         </div>
-        <button class="btn-delete" onclick="deleteItem('videos',${i})">삭제</button>
+        <div class="list-actions">
+          <button class="btn-edit" onclick="openEditModal('videos',${i})">수정</button>
+          <button class="btn-delete" onclick="deleteItem('videos',${i})">삭제</button>
+        </div>
       </div>`).join('')
     : '<div class="list-empty">영상이 없습니다</div>';
   }
@@ -604,7 +696,10 @@
         <div class="list-item-info">
           <div class="list-item-title" style="word-break:break-all;font-size:11px">${url}</div>
         </div>
-        <button class="btn-delete" onclick="deleteItem('gallery',${i})">삭제</button>
+        <div class="list-actions">
+          <button class="btn-edit" onclick="openEditModal('gallery',${i})">수정</button>
+          <button class="btn-delete" onclick="deleteItem('gallery',${i})">삭제</button>
+        </div>
       </div>`).join('')
     : '<div class="list-empty">사진이 없습니다</div>';
   }
@@ -624,6 +719,88 @@
       renderGalleryList();
     } catch(e) { showToast('❌ 저장 실패', 'red'); DATA.gallery = before; }
     btn.disabled = false; btn.querySelector('span').textContent = '사진 저장';
+  }
+
+  // ── 수정 모달 ──
+  let editState = { type: '', idx: -1 };
+  const TAG_OPTIONS = {
+    articles: ['경기','인터뷰','훈련','수상','기타'],
+    videos:   ['인터뷰','경기','훈련','예능','기타'],
+    gallery:  []
+  };
+
+  function openEditModal(type, idx) {
+    editState = { type, idx };
+    const item = DATA[type][idx];
+    const titles = { articles: '기사 수정', videos: '영상 수정', gallery: '사진 URL 수정' };
+    document.getElementById('modal-title').textContent = titles[type];
+
+    let html = '';
+    if (type === 'articles') {
+      html = `
+        <div class="form-field"><label>날짜</label><input id="m-date" type="date" value="${item.date}" /></div>
+        <div class="form-field"><label>매체명</label><input id="m-source" type="text" value="${esc(item.source)}" /></div>
+        <div class="form-field"><label>기사 제목</label><input id="m-title" type="text" value="${esc(item.title)}" /></div>
+        <div class="form-field"><label>기사 URL</label><input id="m-url" type="url" value="${esc(item.url)}" /></div>
+        <div class="form-field"><label>태그</label><select id="m-tag">${TAG_OPTIONS.articles.map(t=>`<option ${(item.tags||[])[0]===t?'selected':''}>${t}</option>`).join('')}</select></div>`;
+    } else if (type === 'videos') {
+      html = `
+        <div class="form-field"><label>날짜</label><input id="m-date" type="date" value="${item.date}" /></div>
+        <div class="form-field"><label>채널명</label><input id="m-channel" type="text" value="${esc(item.channel)}" /></div>
+        <div class="form-field"><label>영상 제목</label><input id="m-title" type="text" value="${esc(item.title)}" /></div>
+        <div class="form-field"><label>YouTube ID</label><input id="m-videoid" type="text" value="${esc(item.videoId)}" /></div>
+        <div class="form-field"><label>태그</label><select id="m-tag">${TAG_OPTIONS.videos.map(t=>`<option ${(item.tags||[])[0]===t?'selected':''}>${t}</option>`).join('')}</select></div>`;
+    } else {
+      html = `<div class="form-field"><label>이미지 URL</label><input id="m-url" type="url" value="${esc(item)}" /></div>`;
+    }
+
+    document.getElementById('modal-body').innerHTML = html;
+    document.getElementById('modal-backdrop').classList.add('open');
+  }
+
+  function closeModal(e) { if (e.target === document.getElementById('modal-backdrop')) closeModalDirect(); }
+  function closeModalDirect() { document.getElementById('modal-backdrop').classList.remove('open'); }
+
+  async function saveEdit() {
+    const { type, idx } = editState;
+    const before = JSON.parse(JSON.stringify(DATA[type][idx]));
+
+    if (type === 'articles') {
+      DATA[type][idx] = {
+        date:   document.getElementById('m-date').value,
+        source: document.getElementById('m-source').value.trim(),
+        title:  document.getElementById('m-title').value.trim(),
+        url:    document.getElementById('m-url').value.trim(),
+        tags:   [document.getElementById('m-tag').value]
+      };
+    } else if (type === 'videos') {
+      DATA[type][idx] = {
+        date:    document.getElementById('m-date').value,
+        channel: document.getElementById('m-channel').value.trim(),
+        title:   document.getElementById('m-title').value.trim(),
+        videoId: document.getElementById('m-videoid').value.trim(),
+        tags:    [document.getElementById('m-tag').value]
+      };
+    } else {
+      DATA[type][idx] = document.getElementById('m-url').value.trim();
+    }
+
+    DATA.articles && DATA.articles.sort((a,b) => b.date.localeCompare(a.date));
+    DATA.videos   && DATA.videos.sort((a,b)   => b.date.localeCompare(a.date));
+
+    try {
+      await saveDataToGitHub();
+      showToast('✅ 수정 완료!', 'green');
+      closeModalDirect();
+      renderAll();
+    } catch(e) {
+      showToast('❌ 저장 실패', 'red');
+      DATA[type][idx] = before;
+    }
+  }
+
+  function esc(str) {
+    return String(str||'').replace(/"/g,'&quot;').replace(/</g,'&lt;');
   }
 
   // ── 삭제 ──
