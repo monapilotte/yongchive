@@ -85,10 +85,10 @@
     .video-meta { font-size: 11px; color: var(--text-sub); font-family: var(--mono); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 
     /* STORY GRID */
-    .story-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+    .story-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
     .story-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; cursor: pointer; transition: box-shadow 0.15s; }
     .story-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
-    .story-img-wrap { position: relative; width: 100%; padding-top: 177%; background: #eee; overflow: hidden; }
+    .story-img-wrap { position: relative; width: 100%; padding-top: 125%; background: #eee; overflow: hidden; }
     .story-img-wrap img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 0.2s; }
     .story-card:hover .story-img-wrap img { transform: scale(1.03); }
     .story-info { padding: 8px 10px; }
