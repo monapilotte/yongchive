@@ -303,7 +303,7 @@
   <div class="tabs">
     <button class="tab-btn active" onclick="switchTab('articles', this)">📰 기사</button>
     <button class="tab-btn" onclick="switchTab('videos', this)">🎥 영상</button>
-    <button class="tab-btn" onclick="switchTab('gallery', this)">🖼️ 갤러리</button>
+    <button class="tab-btn" onclick="switchTab('stories', this)">📸 스토리</button>
   </div>
 
   <!-- ── 기사 탭 ── -->
@@ -410,27 +410,37 @@
     </div>
   </div>
 
-  <!-- ── 갤러리 탭 ── -->
-  <div id="tab-gallery" class="tab-section">
+  <!-- ── 스토리 탭 ── -->
+  <div id="tab-stories" class="tab-section">
 
     <div class="panel">
-      <h3>사진 추가</h3>
+      <h3>스토리 추가</h3>
       <div class="form-field">
-        <label>이미지 URL (한 줄에 하나씩)</label>
-        <textarea id="g-urls" placeholder="https://example.com/photo1.jpg&#10;https://example.com/photo2.jpg" oninput="previewGalleryUrls()"></textarea>
+        <label>날짜</label>
+        <input type="date" id="s-date" />
       </div>
-      <div class="gallery-preview" id="g-preview"></div>
-      <button class="btn-submit" id="g-submit" onclick="submitGallery()">
-        <span>사진 저장</span>
+      <div class="form-field">
+        <label>이미지 URL</label>
+        <input type="url" id="s-url" placeholder="GitHub 이슈에 드래그 후 생성된 URL" oninput="previewStory()" />
+      </div>
+      <div id="s-preview" style="display:none;margin-bottom:12px">
+        <img id="s-preview-img" style="max-width:160px;border-radius:var(--r);border:1px solid var(--border)" />
+      </div>
+      <div class="form-field">
+        <label>메모 <span style="color:var(--sub);font-weight:400">(선택)</span></label>
+        <input type="text" id="s-memo" placeholder="예) 경기 후 인스타 스토리" />
+      </div>
+      <button class="btn-submit" id="s-submit" onclick="submitStory()">
+        <span>스토리 저장</span>
       </button>
     </div>
 
     <div class="list-panel">
       <h3>
-        저장된 사진
-        <span class="list-count" id="g-list-count"></span>
+        저장된 스토리
+        <span class="list-count" id="s-list-count"></span>
       </h3>
-      <div class="list-scroll" id="g-list"></div>
+      <div class="list-scroll" id="s-list"></div>
     </div>
   </div>
 
@@ -457,7 +467,7 @@
   // ─────────────────────────────────────────────
 
   let GH = { user: '', repo: '', token: '' };
-  let DATA = { articles: [], videos: [], gallery: [] };
+  let DATA = { articles: [], videos: [], stories: [] };
   let fileSha = '';
 
   // ── 로그인 ──
@@ -507,7 +517,7 @@
       fileSha = json.sha;
       const decoded = decodeURIComponent(escape(atob(json.content.replace(/\n/g,''))));
       DATA = JSON.parse(decoded);
-      if (!DATA.gallery) DATA.gallery = [];
+      if (!DATA.stories) DATA.stories = [];
       return true;
     } catch(e) { return false; }
   }
@@ -542,11 +552,11 @@
   // ── 날짜 기본값 ──
   function setTodayDates() {
     const today = new Date().toISOString().slice(0,10);
-    ['a-date','v-date'].forEach(id => document.getElementById(id).value = today);
+    ['a-date','v-date','s-date'].forEach(id => document.getElementById(id).value = today);
   }
 
   // ── 렌더 전체 ──
-  function renderAll() { renderArticleList(); renderVideoList(); renderGalleryList(); }
+  function renderAll() { renderArticleList(); renderVideoList(); renderStoryList(); }
 
   // ── 기사 ──
   function renderArticleList() {
@@ -717,46 +727,57 @@
     btn.disabled = false; btn.querySelector('span').textContent = '영상 저장';
   }
 
-  // ── 갤러리 ──
-  function previewGalleryUrls() {
-    const urls = document.getElementById('g-urls').value.trim().split('\n').map(u=>u.trim()).filter(Boolean);
-    document.getElementById('g-preview').innerHTML = urls.map(u=>
-      `<img src="${u}" onerror="this.outerHTML='<div class=preview-err>오류</div>'" />`
-    ).join('');
+  // ── 스토리 ──
+  function previewStory() {
+    const url = document.getElementById('s-url').value.trim();
+    const preview = document.getElementById('s-preview');
+    if (url) {
+      document.getElementById('s-preview-img').src = url;
+      preview.style.display = 'block';
+    } else {
+      preview.style.display = 'none';
+    }
   }
 
-  function renderGalleryList() {
-    const list = DATA.gallery;
-    document.getElementById('g-list-count').textContent = list.length + '장';
-    document.getElementById('g-list').innerHTML = list.length ? list.map((url,i) => `
-      <div class="list-item">
-        <img class="list-thumb" src="${url}" alt="" onerror="this.style.display='none'" />
-        <div class="list-item-info">
-          <div class="list-item-title" style="word-break:break-all;font-size:11px">${url}</div>
-        </div>
-        <div class="list-actions">
-          <button class="btn-edit" onclick="openEditModal('gallery',${i})">수정</button>
-          <button class="btn-delete" onclick="deleteItem('gallery',${i})">삭제</button>
-        </div>
-      </div>`).join('')
-    : '<div class="list-empty">사진이 없습니다</div>';
+  function renderStoryList() {
+    const list = [...DATA.stories].sort((a,b) => b.date.localeCompare(a.date));
+    document.getElementById('s-list-count').textContent = list.length + '장';
+    document.getElementById('s-list').innerHTML = list.length ? list.map((s, i) => {
+      const origIdx = DATA.stories.indexOf(s);
+      return `
+        <div class="list-item">
+          <img class="list-thumb" src="${s.url}" alt="" onerror="this.style.display='none'" style="aspect-ratio:9/16;object-fit:cover" />
+          <div class="list-item-info">
+            <div class="list-item-date">${s.date}</div>
+            <div class="list-item-title" style="font-size:12px">${s.memo || '메모 없음'}</div>
+          </div>
+          <div class="list-actions">
+            <button class="btn-edit" onclick="openEditModal('stories',${origIdx})">수정</button>
+            <button class="btn-delete" onclick="deleteItem('stories',${origIdx})">삭제</button>
+          </div>
+        </div>`;
+    }).join('')
+    : '<div class="list-empty">스토리가 없습니다</div>';
   }
 
-  async function submitGallery() {
-    const urls = document.getElementById('g-urls').value.trim().split('\n').map(u=>u.trim()).filter(Boolean);
-    if (!urls.length) { showToast('URL을 입력해 주세요', 'red'); return; }
-    const btn = document.getElementById('g-submit');
+  async function submitStory() {
+    const date = document.getElementById('s-date').value;
+    const url  = document.getElementById('s-url').value.trim();
+    const memo = document.getElementById('s-memo').value.trim();
+    if (!date || !url) { showToast('날짜와 URL은 필수예요', 'red'); return; }
+    const btn = document.getElementById('s-submit');
     btn.disabled = true; btn.querySelector('span').textContent = '저장 중...';
-    const before = [...DATA.gallery];
-    DATA.gallery.push(...urls);
+    const entry = { date, url };
+    if (memo) entry.memo = memo;
+    DATA.stories.unshift(entry);
     try {
       await saveDataToGitHub();
-      showToast(`✅ 사진 ${urls.length}장 저장 완료!`, 'green');
-      document.getElementById('g-urls').value='';
-      document.getElementById('g-preview').innerHTML='';
-      renderGalleryList();
-    } catch(e) { showToast('❌ 저장 실패', 'red'); DATA.gallery = before; }
-    btn.disabled = false; btn.querySelector('span').textContent = '사진 저장';
+      showToast('✅ 스토리 저장 완료!', 'green');
+      ['s-url','s-memo'].forEach(id => document.getElementById(id).value='');
+      document.getElementById('s-preview').style.display='none';
+      renderStoryList();
+    } catch(e) { showToast('❌ 저장 실패', 'red'); DATA.stories.shift(); }
+    btn.disabled = false; btn.querySelector('span').textContent = '스토리 저장';
   }
 
   // ── 수정 모달 ──
@@ -770,7 +791,7 @@
   function openEditModal(type, idx) {
     editState = { type, idx };
     const item = DATA[type][idx];
-    const titles = { articles: '기사 수정', videos: '영상 수정', gallery: '사진 URL 수정' };
+    const titles = { articles: '기사 수정', videos: '영상 수정', stories: '스토리 수정' };
     document.getElementById('modal-title').textContent = titles[type];
 
     let html = '';
@@ -801,7 +822,10 @@
           </div>
         </div>`;
     } else {
-      html = `<div class="form-field"><label>이미지 URL</label><input id="m-url" type="url" value="${esc(item)}" /></div>`;
+      html = `
+        <div class="form-field"><label>날짜</label><input id="m-date" type="date" value="${item.date}" /></div>
+        <div class="form-field"><label>이미지 URL</label><input id="m-url" type="url" value="${esc(item.url)}" /></div>
+        <div class="form-field"><label>메모</label><input id="m-memo" type="text" value="${esc(item.memo||'')}" placeholder="메모 (선택)" /></div>`;
     }
 
     document.getElementById('modal-body').innerHTML = html;
@@ -837,7 +861,13 @@
       if (start) entry.start = start;
       DATA[type][idx] = entry;
     } else {
-      DATA[type][idx] = document.getElementById('m-url').value.trim();
+      const memo = document.getElementById('m-memo').value.trim();
+      const entry = {
+        date: document.getElementById('m-date').value,
+        url:  document.getElementById('m-url').value.trim()
+      };
+      if (memo) entry.memo = memo;
+      DATA[type][idx] = entry;
     }
 
     DATA.articles && DATA.articles.sort((a,b) => b.date.localeCompare(a.date));
