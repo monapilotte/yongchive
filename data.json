@@ -671,5 +671,12 @@
       ]
     }
   ],
-  "gallery": []
+  "gallery": [],
+  "stories": [
+    {
+      "date": "2026-05-19",
+      "url": "https://github.com/user-attachments/assets/f4551842-38d8-45bf-8701-f298fc528fb8",
+      "memo": "260519 수훈선수"
+    }
+  ]
 }
