@@ -84,6 +84,12 @@
     .video-info h3 { font-size: 13px; font-weight: 500; line-height: 1.4; margin-bottom: 6px; }
     .video-meta { font-size: 11px; color: var(--text-sub); font-family: var(--mono); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 
+    .year-filters { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+    .month-filters { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; min-height: 28px; }
+    .year-btn, .month-btn { font-family: var(--mono); font-size: 11px; border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; background: var(--surface); cursor: pointer; color: var(--text-sub); transition: all 0.15s; }
+    .year-btn:hover, .month-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .year-btn.active, .month-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
     /* STORY GRID */
     .story-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
     .story-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; cursor: pointer; transition: box-shadow 0.15s; }
@@ -190,6 +196,8 @@
 
   <!-- 스토리 -->
   <div id="tab-stories" class="tab-section">
+    <div class="year-filters" id="story-year-filters"></div>
+    <div class="month-filters" id="story-month-filters"></div>
     <div class="result-count" id="story-count-label"></div>
     <div class="story-grid" id="story-grid"></div>
   </div>
@@ -237,7 +245,7 @@
     document.getElementById('stat-articles').textContent = DATA.articles.length;
     document.getElementById('stat-videos').textContent   = DATA.videos.length;
     document.getElementById('stat-gallery').textContent  = DATA.stories.length;
-    buildTagFilters(); renderArticles(); renderVideos(); renderStories();
+    buildTagFilters(); buildStoryFilters(); renderArticles(); renderVideos(); renderStories();
   }
 
   function buildTagFilters() {
@@ -324,27 +332,64 @@
       </a>`).join('');
   }
 
+  let activeStoryYear = 'all', activeStoryMonth = 'all';
+
+  function buildStoryFilters() {
+    const years = ['all', ...new Set(DATA.stories.map(s => s.date.slice(0,4))).values()].sort((a,b) => b > a ? 1 : -1);
+    document.getElementById('story-year-filters').innerHTML = years.map(y =>
+      `<button class="year-btn ${y==='all'?'active':''}" onclick="setStoryYear('${y}',this)">${y==='all'?'전체':y}</button>`
+    ).join('');
+    buildMonthFilters();
+  }
+
+  function buildMonthFilters() {
+    const monthWrap = document.getElementById('story-month-filters');
+    if (activeStoryYear === 'all') { monthWrap.innerHTML = ''; return; }
+    const months = ['all', ...new Set(
+      DATA.stories.filter(s => s.date.startsWith(activeStoryYear)).map(s => s.date.slice(5,7))
+    ).values()].sort();
+    monthWrap.innerHTML = months.map(m =>
+      `<button class="month-btn ${m==='all'?'active':''}" onclick="setStoryMonth('${m}',this)">${m==='all'?'전체':parseInt(m)+'월'}</button>`
+    ).join('');
+  }
+
+  function setStoryYear(year, btn) {
+    activeStoryYear = year;
+    activeStoryMonth = 'all';
+    document.querySelectorAll('.year-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    buildMonthFilters();
+    renderStories();
+  }
+
+  function setStoryMonth(month, btn) {
+    activeStoryMonth = month;
+    document.querySelectorAll('.month-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderStories();
+  }
+
   function renderStories() {
-    const items = DATA.stories;
-    document.getElementById('stat-gallery').textContent  = items.length;
-    document.getElementById('story-count-label').textContent = `${items.length}장`;
+    let items = [...DATA.stories].sort((a,b) => b.date.localeCompare(a.date));
+    if (activeStoryYear !== 'all') items = items.filter(s => s.date.startsWith(activeStoryYear));
+    if (activeStoryMonth !== 'all') items = items.filter(s => s.date.slice(5,7) === activeStoryMonth);
+    document.getElementById('stat-gallery').textContent = DATA.stories.length;
+    document.getElementById('story-count-label').textContent = `${items.length}장 / 전체 ${DATA.stories.length}장`;
     if (!items.length) {
-      document.getElementById('story-grid').innerHTML = '<div class="empty-state" style="grid-column:1/-1">스토리가 없습니다.</div>';
+      document.getElementById('story-grid').innerHTML = '<div class="empty-state" style="grid-column:1/-1">해당 기간의 SNS가 없습니다.</div>';
       return;
     }
-    document.getElementById('story-grid').innerHTML = [...items]
-      .sort((a,b) => b.date.localeCompare(a.date))
-      .map((s, i) => `
-        <div class="story-card" onclick="openLb(${i})">
-          <div class="story-img-wrap">
-            <img src="${s.url}" alt="${s.memo||''}" loading="lazy"
-              onerror="this.parentElement.innerHTML='<span style=position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#aaa;font-size:11px>로드 실패</span>'" />
-          </div>
-          <div class="story-info">
-            <div class="story-date">${s.date}</div>
-            ${s.memo ? `<div class="story-memo">${s.memo}</div>` : ''}
-          </div>
-        </div>`).join('');
+    document.getElementById('story-grid').innerHTML = items.map((s, i) => `
+      <div class="story-card" onclick="openLb(${DATA.stories.indexOf(s)})">
+        <div class="story-img-wrap">
+          <img src="${s.url}" alt="${s.memo||''}" loading="lazy"
+            onerror="this.parentElement.innerHTML='<span style=position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#aaa;font-size:11px>로드 실패</span>'" />
+        </div>
+        <div class="story-info">
+          <div class="story-date">${s.date}</div>
+          ${s.memo ? `<div class="story-memo">${s.memo}</div>` : ''}
+        </div>
+      </div>`).join('');
   }
 
   function openLb(i) {
