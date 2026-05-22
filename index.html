@@ -369,10 +369,13 @@
     renderStories();
   }
 
+  let lbItems = [];
+
   function renderStories() {
     let items = [...DATA.stories].sort((a,b) => b.date.localeCompare(a.date));
     if (activeStoryYear !== 'all') items = items.filter(s => s.date.startsWith(activeStoryYear));
     if (activeStoryMonth !== 'all') items = items.filter(s => s.date.slice(5,7) === activeStoryMonth);
+    lbItems = items; // 라이트박스용 저장
     document.getElementById('stat-gallery').textContent = DATA.stories.length;
     document.getElementById('story-count-label').textContent = `${items.length}장 / 전체 ${DATA.stories.length}장`;
     if (!items.length) {
@@ -380,7 +383,7 @@
       return;
     }
     document.getElementById('story-grid').innerHTML = items.map((s, i) => `
-      <div class="story-card" onclick="openLb(${DATA.stories.indexOf(s)})">
+      <div class="story-card" onclick="openLb(${i})">
         <div class="story-img-wrap">
           <img src="${s.url}" alt="${s.memo||''}" loading="lazy"
             onerror="this.parentElement.innerHTML='<span style=position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#aaa;font-size:11px>로드 실패</span>'" />
@@ -393,17 +396,15 @@
   }
 
   function openLb(i) {
-    const items = [...DATA.stories].sort((a,b) => b.date.localeCompare(a.date));
     lbIndex = i;
-    document.getElementById('lb-img').src = items[i].url;
+    document.getElementById('lb-img').src = lbItems[i].url;
     document.getElementById('lightbox').classList.add('open');
   }
   function closeLb() { document.getElementById('lightbox').classList.remove('open'); }
   function closeLbOverlay(e) { if(e.target===document.getElementById('lightbox')) closeLb(); }
   function lbNav(dir) {
-    const items = [...DATA.stories].sort((a,b) => b.date.localeCompare(a.date));
-    lbIndex = (lbIndex + dir + items.length) % items.length;
-    document.getElementById('lb-img').src = items[lbIndex].url;
+    lbIndex = (lbIndex + dir + lbItems.length) % lbItems.length;
+    document.getElementById('lb-img').src = lbItems[lbIndex].url;
   }
   document.addEventListener('keydown', e => {
     if (!document.getElementById('lightbox').classList.contains('open')) return;
