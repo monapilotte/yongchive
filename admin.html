@@ -303,7 +303,7 @@
   <div class="tabs">
     <button class="tab-btn active" onclick="switchTab('articles', this)">📰 기사</button>
     <button class="tab-btn" onclick="switchTab('videos', this)">🎥 영상</button>
-    <button class="tab-btn" onclick="switchTab('stories', this)">📸 스토리</button>
+    <button class="tab-btn" onclick="switchTab('stories', this)">📸 SNS</button>
   </div>
 
   <!-- ── 기사 탭 ── -->
@@ -414,7 +414,7 @@
   <div id="tab-stories" class="tab-section">
 
     <div class="panel">
-      <h3>스토리 추가</h3>
+      <h3>SNS 추가</h3>
       <div class="form-field">
         <label>날짜</label>
         <input type="date" id="s-date" />
@@ -431,13 +431,13 @@
         <input type="text" id="s-memo" placeholder="예) 경기 후 인스타 스토리" />
       </div>
       <button class="btn-submit" id="s-submit" onclick="submitStory()">
-        <span>스토리 저장</span>
+        <span>SNS 저장</span>
       </button>
     </div>
 
     <div class="list-panel">
       <h3>
-        저장된 스토리
+        저장된 SNS
         <span class="list-count" id="s-list-count"></span>
       </h3>
       <div class="list-scroll" id="s-list"></div>
@@ -757,7 +757,7 @@
           </div>
         </div>`;
     }).join('')
-    : '<div class="list-empty">스토리가 없습니다</div>';
+    : '<div class="list-empty">SNS가 없습니다</div>';
   }
 
   async function submitStory() {
@@ -772,7 +772,7 @@
     DATA.stories.unshift(entry);
     try {
       await saveDataToGitHub();
-      showToast('✅ 스토리 저장 완료!', 'green');
+      showToast('✅ SNS 저장 완료!', 'green');
       ['s-url','s-memo'].forEach(id => document.getElementById(id).value='');
       document.getElementById('s-preview').style.display='none';
       renderStoryList();
@@ -791,7 +791,7 @@
   function openEditModal(type, idx) {
     editState = { type, idx };
     const item = DATA[type][idx];
-    const titles = { articles: '기사 수정', videos: '영상 수정', stories: '스토리 수정' };
+    const titles = { articles: '기사 수정', videos: '영상 수정', stories: 'SNS 수정' };
     document.getElementById('modal-title').textContent = titles[type];
 
     let html = '';
